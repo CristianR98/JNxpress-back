@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import jnxpress.Producto;
 import jnxpress.Usuario;
 
@@ -34,7 +35,7 @@ public class MySql {
             return new Respuesta(500,e.getMessage());
         }
         catch(SQLException e) {
-            return new Respuesta(404,e.getMessage());
+            return new Respuesta(500,e.getMessage());
         }
     }
     
@@ -95,7 +96,7 @@ public class MySql {
         return respuesta;
     }
     
-    public static Respuesta<Usuario> getUser(String email, String password) {
+    public static Respuesta<Usuario> login(String email, String password) {
         
         Respuesta<Usuario> respuesta = getConnection();
         
@@ -109,9 +110,6 @@ public class MySql {
                 
                 String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
                 //String query =  "SELECT * FROM `users` WHERE `user-email` = 'c.nahu.roman@gmail.com'";
-
-                          
-                usuario = new Usuario();
                 
                 rs = stm.executeQuery(query);
                 
@@ -155,4 +153,41 @@ public class MySql {
         return respuesta;
     }
     
+    public static Respuesta<Usuario> getUser(int id) {
+        
+        Respuesta<Usuario> respuesta = getConnection();
+        
+        Usuario usuario;
+        
+        if (respuesta.getCode() == 200) {
+            
+            try {
+                String query = "SELECT * FROM users WHERE `user-id` = '" + id+ "'";
+                
+                rs = stm.executeQuery(query);
+                
+                rs.next();
+                
+                usuario = new Usuario(
+                        id,
+                        rs.getString("user-username"),
+                        rs.getString("user-email"),
+                        rs.getFloat("user-balance"),
+                        rs.getInt("user-sales"),
+                        rs.getInt("user-purchase"),
+                        rs.getInt("user-appreciation")
+                );
+                
+                respuesta.setContent(usuario);
+                
+            }  
+            catch(SQLException e) {
+                respuesta.setCode(500);
+                respuesta.setMessage(e.getMessage());
+            }
+            
+        }
+        
+        return respuesta;
+    }
 }
