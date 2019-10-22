@@ -12,23 +12,59 @@ and open the template in the editor.
     </head>
     <body>
         <div>TODO write content</div>
-        <div id="container">
-            <button id="login">Iniciar sesión</button>
-        </div>
-        <div id="container">
+        <form id="form">
+            <input type="file" id="file">
             <button id="verif">Verificar</button>
-        </div>
+        </form>
         <script>
-            let login = document.getElementById("login")
             let verif = document.getElementById("verif")
+            let form = document.getElementById("form")
+            let file = document.getElementById("file")
             
-            login.onclick = () => {
-                fetch('login?email=c.nahu.roman@gmail.com&password=qwerty123').then( resp => resp.text().then(resp => console.log(resp)))
+            let body = {
+                name: 'Topper Street Nova',
+                description: `Topper Street NovaTopper Street NovaTopper Street Nova
+                              Topper Street NovaTopper Street NovaTopper Street Nova
+                              Topper Street NovaTopper Street NovaTopper Street Nova
+                              Topper Street NovaTopper Street NovaTopper Street Nova`,
+                price: 1245.50,
+                stock: 43,
+                image: 'noseeeep',
+                date: new Date(),
+                category: {
+                    id: 1,
+                },
+                condition: {
+                    id: 2
+                },
+                user: {
+                    id: 1,
+                    username: 'JNxpress',
+                    description: 'Fundador de JNxpress',
+                    email: 'jnxpress@jnx.com',
+                    password: 'qwerty123',
+                    balance: 50000,
+                    sales: 45,
+                    purchase: 62,
+                    appreciation: 5
+                }
             }
-            
-            verif.onclick = () => {
-                fetch('verificarSesion').then( resp => resp.text().then(resp => console.log(resp)))
-            }
+            body = JSON.stringify(body)
+            fetch('publicProduct',{method:'POST',body})
+                .then(json => json.json()
+                .then(resp => console.log(resp))
+            )
+            /*file.onchange = () => {
+                let formData = new FormData()
+                formData.append('img',file.files[0]) 
+                formData.append('hola',"Holaaaa") 
+                let ajax = new XMLHttpRequest()
+                ajax.open('POST','files',true)
+                ajax.onload = () => {
+                    console.log(ajax.responseText)
+                }
+                ajax.send(formData)
+            }*/
             
         </script>
     </body>
