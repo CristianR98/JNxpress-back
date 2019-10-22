@@ -1,17 +1,21 @@
 package jnxpress;
 
-public class Producto {
+import response.Respuesta;
+
+public class Product {
     private int id;
+    private User user;
+
     private String name;
     private String description;
-    private int price;
+    private float price;
     private int stock;
     private String image;
     private String date;
     private Category category;
     private Condition condition; 
 
-    public Producto(int id, String name, String description, int price, int stock, String image, String date) {
+    public Product(int id, String name, String description, float price, int stock, String image, String date) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -29,6 +33,14 @@ public class Producto {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+    
     public String getName() {
         return name;
     }
@@ -45,7 +57,7 @@ public class Producto {
         this.description = description;
     }
 
-    public int getPrice() {
+    public float getPrice() {
         return price;
     }
 
@@ -92,4 +104,54 @@ public class Producto {
     public void setCondition(Condition condition) {
         this.condition = condition;
     }
+    
+    
+    public boolean validate() {
+        
+        if (validateName() && validateDescription() && validatePrice() && validateStock()) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean validateName() {
+        
+        if (name.length() > 40) {
+            return false;
+        }
+        
+        return true;
+        
+    }
+    private boolean validateDescription() {
+        
+        if (description.length() > 1000) {
+            return false;
+        }
+        
+        return true;
+        
+    }
+    private boolean validatePrice() {
+        
+        if (price >= 1000000) {
+            return false;
+        }
+        
+        return true;
+        
+    }
+    private boolean validateStock() {
+        
+        if (stock >= 1000) {
+            return false;
+        }
+        
+        return true;
+        
+    }
+    
+    
+    
 }

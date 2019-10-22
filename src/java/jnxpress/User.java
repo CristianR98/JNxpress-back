@@ -9,9 +9,10 @@ package jnxpress;
  *
  * @author Nahu
  */
-public class Usuario {
+public class User {
     private int id;
     private String username;
+    private String description;
     private String email;
     private String password;
     private float balance;
@@ -19,7 +20,7 @@ public class Usuario {
     private int purchase;
     private int appreciation;
 
-    public Usuario(int id, String username, String email, float balance, int sales, int purchase, int appreciation) {
+    public User(int id, String username, String email, float balance, int sales, int purchase, int appreciation) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -29,10 +30,20 @@ public class Usuario {
         this.appreciation = appreciation;
     }
     
-    public Usuario() {
+    public User() {
         
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    
+    
     public float getBalance() {
         return balance;
     }

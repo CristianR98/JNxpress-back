@@ -9,8 +9,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
-import jnxpress.Producto;
-import jnxpress.Usuario;
+import jnxpress.Product;
+import jnxpress.User;
 
 public class MySql {
     private static Connection con;
@@ -49,11 +49,11 @@ public class MySql {
         }
     }
     
-    public static Respuesta<ArrayList<Producto>> getProductos() {
+    public static Respuesta<ArrayList<Product>> getProductos() {
         
-        Respuesta<ArrayList<Producto>> respuesta = getConnection();
+        Respuesta<ArrayList<Product>> respuesta = getConnection();
         
-        ArrayList<Producto> listProducts = new ArrayList();
+        ArrayList<Product> listProducts = new ArrayList();
         
         if (respuesta.getCode() == 200) {
             
@@ -67,7 +67,7 @@ public class MySql {
                 rs = stm.executeQuery(query);
                 
                 while(rs.next()) {
-                    Producto producto = new Producto(
+                    Product producto = new Product(
                         rs.getInt("product-id"),
                         rs.getString("product-name"),
                         rs.getString("product-description"),
@@ -95,11 +95,11 @@ public class MySql {
         return respuesta;
     }
     
-    public static Respuesta<Usuario> getUser(String email, String password) {
+    public static Respuesta<User> getUser(String email, String password) {
         
-        Respuesta<Usuario> respuesta = getConnection();
+        Respuesta<User> respuesta = getConnection();
         
-        Usuario usuario;
+        User usuario;
         
         
         
@@ -111,7 +111,7 @@ public class MySql {
                 //String query =  "SELECT * FROM `users` WHERE `user-email` = 'c.nahu.roman@gmail.com'";
 
                           
-                usuario = new Usuario();
+                usuario = new User();
                 
                 rs = stm.executeQuery(query);
                 
@@ -122,7 +122,7 @@ public class MySql {
                 
                 
                 if (password.equals(passwordDB)) {
-                    usuario = new Usuario(
+                    usuario = new User(
                         rs.getInt("user-id"),
                         rs.getString("user-username"),
                         rs.getString("user-email"),
@@ -151,6 +151,54 @@ public class MySql {
             
             
         }
+        
+        return respuesta;
+    }
+    
+    
+    public static Respuesta<String> postProduct(Product product){
+        
+        Respuesta<String> respuesta = getConnection();
+       
+        if (respuesta.getCode() == 200) {
+            
+            try {
+                
+                String query = "INSERT INTO `products` ("
+                        + "`user-id`" + ","
+                        + "`product-name`" + ","
+                        + "`product-description`" + ","
+                        + "`product-price`" + ","
+                        + "`product-stock`" + ","
+                        + "`product-image`" + ","
+                        + "`category-id`" + ","
+                        + "`condition-id`"
+                        + ") VALUES ("
+                        + product.getUser().getId() + ","
+                        + "'" + product.getName() + "'" + ","
+                        + "'" + product.getDescription() + "'" + ","
+                        + product.getPrice() + ","
+                        + product.getStock() + ","
+                        + "'" + product.getImage() + "'" + ","
+                        + product.getCategory().getId() + ","
+                        + product.getCondition().getId()
+                        + ")";
+                
+                /*query = "INSERT INTO `products`(`user-id`, `product-name`, 
+                `producs-description`, `product-price`, `product-stock`, `product-image`, 
+                `category-id`, `condition-id`) VALUES (1,'Moto one', 
+                'Un celular, no tengo ganas de buscar la descripción pero si de escribir esto xd.', 
+                7000.00, 5, 'Despues arreglo esto xd', 1, 1)";*/
+                
+                respuesta.setContent(query);
+                int num = stm.executeUpdate(query);
+            }
+            catch(SQLException e) {
+                respuesta.setCode(500);
+                respuesta.setMessage(e.getMessage());
+            }
+        }
+        
         
         return respuesta;
     }
