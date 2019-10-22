@@ -5,8 +5,6 @@
  */
 package servlets;
 
-import com.oreilly.servlet.MultipartRequest;
-
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;

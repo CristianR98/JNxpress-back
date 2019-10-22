@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 import java.util.ArrayList;
 import jnxpress.Product;
+
 import jnxpress.User;
 
 public class MySql {
