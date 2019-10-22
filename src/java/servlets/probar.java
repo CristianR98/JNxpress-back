@@ -3,27 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servlets.user;
+package servlets;
+
+import com.oreilly.servlet.MultipartRequest;
 
 import com.google.gson.Gson;
-import database.MySql;
-import response.Respuesta;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import jnxpress.User;
 
 /**
  *
  * @author Nahu
  */
-@WebServlet(name = "verificarSesion", urlPatterns = {"/verificarSesion"})
-public class verificarSesion extends HttpServlet {
+public class probar extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,39 +33,21 @@ public class verificarSesion extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            
-            
-            
-            HttpSession session = request.getSession();
-            /*
-            
-            User y Respuestas son clases mias
-        
-            */
-            User user = (User)session.getAttribute("user");
-            
+            /* TODO output your page here. You may use following sample code. */
             Gson json = new Gson();
             
-            if ( user != null ) {
-                
-                Respuesta respuesta = new Respuesta(403,"Sesión no iniciada!");
-                out.println(json.toJson(respuesta));
-                
-            }else{
-                
-                Respuesta<User> respuesta = new Respuesta(200,"Sesión no iniciada");
-                respuesta.setContent(user);
-                out.println(json.toJson(respuesta));
-                
-            }
+            User persona = new User();
+            persona = json.fromJson(request.getReader().readLine(), persona.getClass());
             
             
-            out.println(json.toJson(session.getAttribute("test")));
-                    
+            String nombre = request.getParameter("nombre");
+            String apellido = request.getParameter("apellido");
             
-            
+            out.println(request.getReader().readLine());
+            out.println(persona.getBalance());
+            out.println(nombre + " " + apellido);
         }
     }
 

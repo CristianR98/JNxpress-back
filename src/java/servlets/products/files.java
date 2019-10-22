@@ -3,27 +3,33 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package servlets.user;
+package servlets.products;
 
-import com.google.gson.Gson;
-import database.MySql;
-import response.Respuesta;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import jnxpress.User;
+import javax.servlet.http.Part;
 
 /**
  *
  * @author Nahu
  */
-@WebServlet(name = "verificarSesion", urlPatterns = {"/verificarSesion"})
-public class verificarSesion extends HttpServlet {
+@MultipartConfig
+public class files extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,37 +44,36 @@ public class verificarSesion extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            
-            
-            
-            HttpSession session = request.getSession();
-            /*
-            
-            User y Respuestas son clases mias
-        
-            */
-            User user = (User)session.getAttribute("user");
-            
-            Gson json = new Gson();
-            
-            if ( user != null ) {
-                
-                Respuesta respuesta = new Respuesta(403,"Sesión no iniciada!");
-                out.println(json.toJson(respuesta));
-                
-            }else{
-                
-                Respuesta<User> respuesta = new Respuesta(200,"Sesión no iniciada");
-                respuesta.setContent(user);
-                out.println(json.toJson(respuesta));
-                
+            /* TODO output your page here. You may use following sample code. */
+            Part file = request.getPart("img");
+            File salida = new File("C:\\Users\\Nahu\\Desktop\\carpeta\\archivo.jpg");
+            int i = 0;
+            while(salida.exists()) {
+                i++;
+                salida = new File("C:\\Users\\Nahu\\Desktop\\carpeta\\archivo" +i+ ".jpg");
             }
             
+            InputStream inputStream = file.getInputStream();  
+            OutputStream outputStream = new FileOutputStream(file.getSubmittedFileName());
+                                
+            int read = 0;
+            byte[] bytes = new byte[1024];
+           
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+            outputStream.close();
             
-            out.println(json.toJson(session.getAttribute("test")));
-                    
-            
-            
+            Path path = Paths.get(file.getSubmittedFileName());
+            File carpeta = new File("C:\\Users\\Nahu\\Desktop\\carpeta");
+            carpeta.mkdir();
+            Path origenPath = path;
+            Path destinoPath = Paths.get(salida.getAbsolutePath());
+            out.println(origenPath);
+            Files.move(origenPath, destinoPath,StandardCopyOption.REPLACE_EXISTING);
+            out.println(destinoPath);
+        }catch(NoSuchFileException e) {
+            System.out.println(e.getFile());
         }
     }
 

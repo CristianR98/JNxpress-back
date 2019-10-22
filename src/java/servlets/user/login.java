@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package actions;
+package servlets.user;
 
 import com.google.gson.Gson;
 import database.MySql;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession ;
-import jnxpress.Usuario;
+import jnxpress.User;
 import response.Respuesta;
 
 
@@ -43,7 +43,7 @@ public class login extends HttpServlet {
             
             /*
             
-            Usuario y Respuestas son clases mias
+            User y Respuestas son clases mias
         
             MySql es una clase con metodos estaticos
             
@@ -52,7 +52,7 @@ public class login extends HttpServlet {
             String email = request.getParameter("email");
             String password= request.getParameter("password");
             
-            Respuesta<Usuario> respuesta = MySql.getUser(email, password);
+            Respuesta<User> respuesta = MySql.getUser(email, password);
             
             session.setAttribute("test","Funciona!");
             

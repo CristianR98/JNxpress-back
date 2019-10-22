@@ -1,73 +1,42 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package servlets.user;
+package servlets.products;
 
-import com.google.gson.Gson;
-import database.MySql;
-import response.Respuesta;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import jnxpress.User;
 
-/**
- *
- * @author Nahu
- */
-@WebServlet(name = "verificarSesion", urlPatterns = {"/verificarSesion"})
-public class verificarSesion extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+import com.google.gson.Gson;
+import database.MySql;
+import jnxpress.Product;
+import response.Respuesta;
+
+
+public class publicProduct extends HttpServlet {
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            
-            
-            
-            HttpSession session = request.getSession();
-            /*
-            
-            User y Respuestas son clases mias
-        
-            */
-            User user = (User)session.getAttribute("user");
             
             Gson json = new Gson();
             
-            if ( user != null ) {
-                
-                Respuesta respuesta = new Respuesta(403,"Sesión no iniciada!");
-                out.println(json.toJson(respuesta));
-                
-            }else{
-                
-                Respuesta<User> respuesta = new Respuesta(200,"Sesión no iniciada");
-                respuesta.setContent(user);
-                out.println(json.toJson(respuesta));
-                
+            String req = request.getReader().readLine();
+            
+            Product product = json.fromJson(req, Product.class);
+            
+            Respuesta<String> respuesta;
+            
+            if (product.validate()) {
+                respuesta = MySql.postProduct(product);
+            }else {
+                respuesta = new Respuesta(403,"No autorizado!");
+                respuesta.setContent("Ingrese los datos correctamente!");
             }
             
-            
-            out.println(json.toJson(session.getAttribute("test")));
-                    
-            
+            out.println(json.toJson(respuesta));
             
         }
     }
