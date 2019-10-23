@@ -5,6 +5,9 @@
  */
 package jnxpress;
 
+import database.MySql;
+import response.Respuesta;
+
 /**
  *
  * @author Nahu
@@ -15,6 +18,7 @@ public class User {
     private String description;
     private String email;
     private String password;
+    private String confirmPassword;
     private float balance;
     private int sales;
     private int purchase;
@@ -41,8 +45,6 @@ public class User {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    
     
     public float getBalance() {
         return balance;
@@ -107,6 +109,76 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
     
+    public Respuesta existDB() {
+        return MySql.getUserForId(id);
+    }
+    
+    public Respuesta validate() {
+        
+        
+        Respuesta respuesta = validatePassword();
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        respuesta = validateUsername();
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        respuesta = validateEmail();
+        if (!respuesta.isOk()) {
+            return respuesta;
+        } 
+        
+        return respuesta;
+    }
+    
+    private Respuesta validatePassword() {
+        
+        Respuesta respuesta;
+        
+        if (!password.equals(confirmPassword)) {
+            respuesta = new Respuesta(403, false, "Los password no coinciden!");
+            return respuesta;
+        }
+        if (password.length() >= 8 && password.length() <= 30) {
+            respuesta = new Respuesta(200, true, "");
+            return respuesta;
+        }else {
+            respuesta = new Respuesta(403, false, "El password de usuario debe tener entre 8 y 30 digitos.");
+            return respuesta;
+        }
+        
+        
+    }
+    
+    private Respuesta validateUsername() {
+        
+        Respuesta respuesta;
+        
+        if (username.length() >= 6 && username.length() <= 20) {
+            
+            respuesta = MySql.getUserForUsername(username);
+            
+        }else {
+            respuesta = new Respuesta(403, false, "El nombre de usuario debe tener entre 6 y 20 digitos.");
+        }
+        
+        return respuesta;
+    }
+    
+    private Respuesta validateEmail() { 
+                
+        return MySql.getUserForEmail(email);
+        
+    }
     
 }

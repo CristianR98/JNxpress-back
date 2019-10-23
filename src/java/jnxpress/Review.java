@@ -9,12 +9,18 @@ package jnxpress;
  *
  * @author Nahu
  */
-public class Review {
+public class Review<T> {
     private int id;
     private User user;
-    private User userTarget;
+    private T target;
     private String content;
+    private int appreciation;
 
+    
+    public Class getType() {
+        return target.getClass();
+    }
+    
     public int getId() {
         return id;
     }
@@ -31,12 +37,12 @@ public class Review {
         this.user = user;
     }
 
-    public User getUserTarget() {
-        return userTarget;
+    public T getTarget() {
+        return target;
     }
 
-    public void setUserTarget(User userTarget) {
-        this.userTarget = userTarget;
+    public void setTarget(T target) {
+        this.target = target;
     }
 
     public String getContent() {
@@ -46,4 +52,15 @@ public class Review {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public int getAppreciation() {
+        return appreciation;
+    }
+
+    public void setAppreciation(int appreciation) {
+        this.appreciation = appreciation;
+    }
+    
+    
+    
 }

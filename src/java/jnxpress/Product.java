@@ -24,6 +24,10 @@ public class Product {
         this.image = image;
         this.date = date;
     }
+    
+    public Product() {
+        
+    }
 
     public int getId() {
         return id;
