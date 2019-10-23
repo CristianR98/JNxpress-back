@@ -99,6 +99,43 @@ public class MySql {
         return respuesta;
     }
     
+    public static Respuesta<String> getProduct(int id) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (respuesta.isOk()) {
+            
+            try {
+                String query = "";
+                
+                rs = stm.executeQuery(query);
+                
+                if (rs.next()) {
+                    
+                    respuesta.setStatus(200);
+                    respuesta.setOk(true);
+                    respuesta.setMessage("OK!");
+                    
+                }else {
+                    
+                    respuesta.setStatus(403);
+                    respuesta.setOk(false);
+                    respuesta.setMessage("El producto no existe.");
+                    
+                }
+                
+                closeConnection();
+                
+            }catch(SQLException e) {
+                
+            }
+            
+            
+        }
+        
+        return respuesta;
+    }
+    
     public static Respuesta<String> postProduct(Product product){
         
         Respuesta<String> respuesta = getConnection();
@@ -206,7 +243,7 @@ public class MySql {
         return respuesta;
     }
     
-    public static Respuesta<String> getUserForId(int id) {
+    public static Respuesta getUserForId(int id) {
         
         Respuesta respuesta = getConnection();
     
@@ -327,6 +364,44 @@ public class MySql {
         
     }
     
+    public static Respuesta<User> getUser(int id) {
+        
+        Respuesta<User> respuesta = getConnection();
+        
+        User usuario;
+        
+        if (respuesta.isOk()) {
+            
+            try {
+                String query = "SELECT * FROM users WHERE `user-id` = '" + id+ "'";
+                
+                rs = stm.executeQuery(query);
+                
+                rs.next();
+                
+                usuario = new User(
+                        id,
+                        rs.getString("user-username"),
+                        rs.getString("user-email"),
+                        rs.getFloat("user-balance"),
+                        rs.getInt("user-sales"),
+                        rs.getInt("user-purchase"),
+                        rs.getInt("user-appreciation")
+                );
+                
+                respuesta.setContent(usuario);
+                
+            }  
+            catch(SQLException e) {
+                respuesta.setStatus(500);
+                respuesta.setMessage(e.getMessage());
+            }
+            
+        }
+        
+        return respuesta;
+    }
+    
     public static Respuesta postUser(User user) {
         
         Respuesta respuesta = getConnection();
@@ -372,6 +447,42 @@ public class MySql {
     
     
     
+        public static Respuesta postProductReview(Review<Product> review) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (respuesta.isOk()) {
+            
+           try {
+               
+               String query = "INSERT INTO `products-reviews` ("
+                       + "`user-id`,"
+                       + "`product-id`,"
+                       + "`product-review-content`,"
+                       + "`product-review-appreciation`"
+                       + ") VALUES ("
+                       + review.getUser().getId() + ","
+                       + review.getTarget().getId() + ","
+                       + "'" + review.getContent() + "',"
+                       + "'" + review.getAppreciation() + "'"
+                       + ")";
+               
+               stm.executeUpdate(query);
+               
+           } catch(SQLException e) {
+                
+                respuesta.setStatus(500);
+                respuesta.setOk(false);
+                respuesta.setMessage(e.getMessage());
+                
+           }
+            
+        }
+        
+        
+        return respuesta;
+    }
+    
     
     
     
@@ -414,42 +525,5 @@ public class MySql {
     }
     
     
-    public static Respuesta<User> getUser(int id) {
-        
-        Respuesta<User> respuesta = getConnection();
-        
-        User usuario;
-        
-        if (respuesta.isOk()) {
-            
-            try {
-                String query = "SELECT * FROM users WHERE `user-id` = '" + id+ "'";
-                
-                rs = stm.executeQuery(query);
-                
-                rs.next();
-                
-                usuario = new User(
-                        id,
-                        rs.getString("user-username"),
-                        rs.getString("user-email"),
-                        rs.getFloat("user-balance"),
-                        rs.getInt("user-sales"),
-                        rs.getInt("user-purchase"),
-                        rs.getInt("user-appreciation")
-                );
-                
-                respuesta.setContent(usuario);
-                
-            }  
-            catch(SQLException e) {
-                respuesta.setStatus(500);
-                respuesta.setMessage(e.getMessage());
-            }
-            
-        }
-        
-        return respuesta;
-    }
     
 }

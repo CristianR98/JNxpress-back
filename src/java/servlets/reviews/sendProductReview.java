@@ -6,6 +6,7 @@
 package servlets.reviews;
 
 import com.google.gson.Gson;
+import database.MySql;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -33,27 +34,36 @@ public class sendProductReview extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             Gson json = new Gson();
             
             Review<Product> review = json.fromJson(request.getReader().readLine(), Review.class);
-            Product product = new Product();
+            
+            String userString = json.toJson(review.getTarget());
+
+            Product product = json.fromJson(userString, Product.class);
+            
             review.setTarget(product);
             
-            Respuesta<String> respuesta = new Respuesta(200, true, "");
-            
-            respuesta.setContent(review.getTarget().getClass().getSimpleName());
+            Respuesta respuesta = review.getTarget().existDB();
             
             
             if (respuesta.isOk()) {
                 
+                respuesta = review.getUser().existDB();
                 
+                if (respuesta.isOk()) {
+                    
+                    respuesta = MySql.postProductReview(review);
+                    
+                }
                 
             }
             
             out.println(json.toJson(respuesta));
+            
         }
     }
 

@@ -13,7 +13,7 @@ import response.Respuesta;
  * @author Nahu
  */
 public class User {
-    private int id;
+    public int id;
     private String username;
     private String description;
     private String email;
@@ -119,7 +119,8 @@ public class User {
     }
     
     public Respuesta existDB() {
-        return MySql.getUserForId(id);
+        return new Respuesta(200,true,"que onda");
+        //return MySql.getUserForId(id);
     }
     
     public Respuesta validate() {

@@ -1,5 +1,6 @@
 package jnxpress;
 
+import database.MySql;
 import response.Respuesta;
 
 public class Product {
@@ -109,6 +110,12 @@ public class Product {
         this.condition = condition;
     }
     
+    public Respuesta existDB() {
+        
+        Respuesta respuesta = MySql.getProduct(id);
+        
+        return respuesta;
+    }
     
     public boolean validate() {
         

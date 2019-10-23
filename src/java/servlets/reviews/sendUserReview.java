@@ -33,7 +33,16 @@ public class sendUserReview extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             Gson json = new Gson();
             
-            Review<User> review = json.fromJson(request.getReader().readLine(), Review.class);
+            
+            Review<User> review = json.fromJson(request.getReader().readLine(), Review.class );
+            
+            String userString = json.toJson(review.getTarget());
+
+            User user = json.fromJson(userString, User.class);
+            
+            review.setTarget(user);
+            
+            out.println(json.toJson(review));
             
             Respuesta respuesta = review.getUser().existDB();
             
@@ -47,9 +56,10 @@ public class sendUserReview extends HttpServlet {
                     
                 }
                 
-            }
+           }
             
             out.println(json.toJson(respuesta));
+            
             
             
         }
