@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.9.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-10-2019 a las 18:23:26
--- Versión del servidor: 10.1.38-MariaDB
--- Versión de PHP: 7.3.3
+-- Tiempo de generación: 24-10-2019 a las 01:29:56
+-- Versión del servidor: 10.4.8-MariaDB
+-- Versión de PHP: 7.1.32
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -36,7 +36,7 @@ CREATE TABLE `products` (
   `product-price` float(9,2) NOT NULL,
   `product-stock` tinyint(3) NOT NULL,
   `product-image` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `product-date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `product-date` timestamp NOT NULL DEFAULT current_timestamp(),
   `category-id` tinyint(4) NOT NULL,
   `condition-id` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -115,16 +115,24 @@ INSERT INTO `products-condition` (`condition-id`, `condition-name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `products-review`
+-- Estructura de tabla para la tabla `products-reviews`
 --
 
-CREATE TABLE `products-review` (
+CREATE TABLE `products-reviews` (
   `product-review-id` smallint(6) NOT NULL,
   `user-id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `product-id` smallint(6) NOT NULL,
-  `product-review-content` smallint(11) NOT NULL,
+  `product-review-content` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `product-review-appreciation` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `products-reviews`
+--
+
+INSERT INTO `products-reviews` (`product-review-id`, `user-id`, `product-id`, `product-review-content`, `product-review-appreciation`) VALUES
+(1, '6', 3, 'Muy buen producto', 4),
+(2, '6', 3, 'Muy buen producto', 4);
 
 -- --------------------------------------------------------
 
@@ -139,9 +147,9 @@ CREATE TABLE `users` (
   `user-password` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user-balance` float(10,2) NOT NULL,
   `user-description` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user-sales` smallint(6) NOT NULL DEFAULT '0',
-  `user-purchases` smallint(6) DEFAULT '0',
-  `user-appreciation` tinyint(1) NOT NULL DEFAULT '0'
+  `user-sales` smallint(6) NOT NULL DEFAULT 0,
+  `user-purchases` smallint(6) DEFAULT 0,
+  `user-appreciation` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -181,7 +189,10 @@ INSERT INTO `users-reviews` (`user-review-id`, `user-id`, `target-id`, `user-rev
 (4, 1, 2, 'Muy buen vendedor', 4),
 (5, 1, 4, 'Muy buen vendedor', 4),
 (6, 1, 5, 'Muy buen vendedor', 4),
-(7, 6, 3, 'Muy buen vendedor', 4);
+(7, 6, 3, 'Muy buen vendedor', 4),
+(8, 6, 3, 'Muy buen vendedor', 4),
+(9, 6, 3, 'Muy buen vendedor', 4),
+(10, 6, 3, 'Muy buen vendedor', 4);
 
 --
 -- Índices para tablas volcadas
@@ -210,12 +221,12 @@ ALTER TABLE `products-condition`
   ADD PRIMARY KEY (`condition-id`);
 
 --
--- Indices de la tabla `products-review`
+-- Indices de la tabla `products-reviews`
 --
-ALTER TABLE `products-review`
+ALTER TABLE `products-reviews`
   ADD PRIMARY KEY (`product-review-id`),
   ADD KEY `id-product` (`product-id`),
-  ADD KEY `id-user` (`product-review-content`);
+  ADD KEY `product-id` (`product-id`);
 
 --
 -- Indices de la tabla `users`
@@ -254,10 +265,10 @@ ALTER TABLE `products-condition`
   MODIFY `condition-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `products-review`
+-- AUTO_INCREMENT de la tabla `products-reviews`
 --
-ALTER TABLE `products-review`
-  MODIFY `product-review-id` smallint(6) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `products-reviews`
+  MODIFY `product-review-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
@@ -269,7 +280,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `users-reviews`
 --
 ALTER TABLE `users-reviews`
-  MODIFY `user-review-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user-review-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Restricciones para tablas volcadas
@@ -284,10 +295,10 @@ ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_3` FOREIGN KEY (`condition-id`) REFERENCES `products-condition` (`condition-id`);
 
 --
--- Filtros para la tabla `products-review`
+-- Filtros para la tabla `products-reviews`
 --
-ALTER TABLE `products-review`
-  ADD CONSTRAINT `products-review_ibfk_1` FOREIGN KEY (`product-id`) REFERENCES `products` (`product-id`);
+ALTER TABLE `products-reviews`
+  ADD CONSTRAINT `products-reviews_ibfk_1` FOREIGN KEY (`product-id`) REFERENCES `products` (`product-id`);
 
 --
 -- Filtros para la tabla `users-reviews`
