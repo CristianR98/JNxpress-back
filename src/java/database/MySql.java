@@ -9,17 +9,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
 import jnxpress.Filter;
 import jnxpress.Product;
 import jnxpress.Review;
-
 import jnxpress.User;
-=======
-import java.util.HashSet;
-import jnxpress.Producto;
-import jnxpress.Usuario;
->>>>>>> refs/remotes/origin/master
 
 public class MySql {
     private static Connection con;
@@ -43,11 +36,7 @@ public class MySql {
             return new Respuesta(500,false, e.getMessage());
         }
         catch(SQLException e) {
-<<<<<<< HEAD
-            return new Respuesta(404,false, e.getMessage());
-=======
-            return new Respuesta(500,e.getMessage());
->>>>>>> refs/remotes/origin/master
+            return new Respuesta(500,false , e.getMessage());
         }
     }
     
@@ -110,11 +99,7 @@ public class MySql {
         return respuesta;
     }
     
-<<<<<<< HEAD
     public static Respuesta<String> postProduct(Product product){
-=======
-    public static Respuesta<Usuario> login(String email, String password) {
->>>>>>> refs/remotes/origin/master
         
         Respuesta<String> respuesta = getConnection();
        
@@ -190,7 +175,6 @@ public class MySql {
             
             try {
                 
-<<<<<<< HEAD
                 rs = stm.executeQuery(query);
                 
                 while(rs.next()) {
@@ -231,10 +215,6 @@ public class MySql {
             try {
                 
                 String query = "Select * FROM `users` WHERE `user-id` = " + id;
-=======
-                String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
-                //String query =  "SELECT * FROM `users` WHERE `user-email` = 'c.nahu.roman@gmail.com'";
->>>>>>> refs/remotes/origin/master
                 
                 rs = stm.executeQuery(query);
                 
@@ -433,18 +413,14 @@ public class MySql {
         return respuesta;
     }
     
-<<<<<<< HEAD
     
-    
-    
-=======
-    public static Respuesta<Usuario> getUser(int id) {
+    public static Respuesta<User> getUser(int id) {
         
-        Respuesta<Usuario> respuesta = getConnection();
+        Respuesta<User> respuesta = getConnection();
         
-        Usuario usuario;
+        User usuario;
         
-        if (respuesta.getCode() == 200) {
+        if (respuesta.isOk()) {
             
             try {
                 String query = "SELECT * FROM users WHERE `user-id` = '" + id+ "'";
@@ -453,7 +429,7 @@ public class MySql {
                 
                 rs.next();
                 
-                usuario = new Usuario(
+                usuario = new User(
                         id,
                         rs.getString("user-username"),
                         rs.getString("user-email"),
@@ -467,7 +443,7 @@ public class MySql {
                 
             }  
             catch(SQLException e) {
-                respuesta.setCode(500);
+                respuesta.setStatus(500);
                 respuesta.setMessage(e.getMessage());
             }
             
@@ -475,5 +451,5 @@ public class MySql {
         
         return respuesta;
     }
->>>>>>> refs/remotes/origin/master
+    
 }
