@@ -5,8 +5,8 @@
         <servlet-class>rew</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>getAllProducts</servlet-name>
-        <servlet-class>servlets.products.getAllProducts</servlet-class>
+        <servlet-name>getProducts</servlet-name>
+        <servlet-class>servlets.products.getProducts</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>probar</servlet-name>
@@ -20,13 +20,25 @@
         <servlet-name>publicProduct</servlet-name>
         <servlet-class>servlets.products.publicProduct</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>getProductsForFilter</servlet-name>
+        <servlet-class>servlets.products.getProductsForFilter</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>sendUserReview</servlet-name>
+        <servlet-class>servlets.reviews.sendUserReview</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>sendProductReview</servlet-name>
+        <servlet-class>servlets.reviews.sendProductReview</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>rew</servlet-name>
         <url-pattern>/rew</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>getAllProducts</servlet-name>
-        <url-pattern>/getAllProducts</url-pattern>
+        <servlet-name>getProducts</servlet-name>
+        <url-pattern>/getProducts</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>probar</servlet-name>
@@ -39,6 +51,18 @@
     <servlet-mapping>
         <servlet-name>publicProduct</servlet-name>
         <url-pattern>/publicProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getProductsForFilter</servlet-name>
+        <url-pattern>/getProductsForFilter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sendUserReview</servlet-name>
+        <url-pattern>/sendUserReview</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sendProductReview</servlet-name>
+        <url-pattern>/sendProductReview</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

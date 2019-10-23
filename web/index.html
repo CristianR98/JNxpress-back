@@ -12,48 +12,163 @@ and open the template in the editor.
     </head>
     <body>
         <div>TODO write content</div>
-        <form id="form">
-            <input type="file" id="file">
-            <button id="verif">Verificar</button>
-        </form>
-        <script>
-            let verif = document.getElementById("verif")
-            let form = document.getElementById("form")
-            let file = document.getElementById("file")
+        
+        <input type="file" id="file"><br><br>
+        
+        <button id="publicar">Publicar producto</button><br><br>
             
-            let body = {
-                name: 'Topper Street Nova',
-                description: `Topper Street NovaTopper Street NovaTopper Street Nova
-                              Topper Street NovaTopper Street NovaTopper Street Nova
-                              Topper Street NovaTopper Street NovaTopper Street Nova
-                              Topper Street NovaTopper Street NovaTopper Street Nova`,
-                price: 1245.50,
-                stock: 43,
-                image: 'noseeeep',
-                date: new Date(),
-                category: {
-                    id: 1,
-                },
-                condition: {
-                    id: 2
-                },
-                user: {
-                    id: 1,
-                    username: 'JNxpress',
-                    description: 'Fundador de JNxpress',
-                    email: 'jnxpress@jnx.com',
-                    password: 'qwerty123',
-                    balance: 50000,
-                    sales: 45,
-                    purchase: 62,
-                    appreciation: 5
+        <button id="ver-productos">Ver productos</button><br><br>
+            
+        <button id="filtros">Aplicar filtros</button><br><br>
+        
+        <button id="prueba" >Prueba</button><br><br>
+        
+        <button id="registrarse" >Registrarse</button><br><br>
+        
+        <button id="postUserReview" >Enviar review a usuario</button><br><br>
+        
+        <button id="postProductReview" >Enviar review a producto</button><br><br>
+        
+        <script>
+            let file = document.getElementById("file")
+            let publicar = document.getElementById("publicar")
+            let verProductos = document.getElementById("ver-productos")
+            let filtros = document.getElementById("filtros")
+            let registrarse = document.getElementById("registrarse")
+            let postUserReview = document.getElementById("postUserReview")
+            let postProductReview = document.getElementById("postProductReview")
+            
+            publicar.onclick = () => {
+                let body = {
+                    name: 'Topper Street Nova',
+                    description: `Topper Street NovaTopper Street NovaTopper Street Nova
+                                  Topper Street NovaTopper Street NovaTopper Street Nova
+                                  Topper Street NovaTopper Street NovaTopper Street Nova
+                                  Topper Street NovaTopper Street NovaTopper Street Nova`,
+                    price: 1245.50,
+                    stock: 43,
+                    image: 'noseeeep',
+                    date: new Date(),
+                        category: {
+                        id: 1,
+                    },
+                    condition: {
+                        id: 2
+                    },
+                    user: {
+                        id: 1,
+                        username: 'JNxpress',
+                        description: 'Fundador de JNxpress',
+                        email: 'jnxpress@jnx.com',
+                        password: 'qwerty123',
+                        balance: 50000,
+                        sales: 45,
+                        purchase: 62,
+                        appreciation: 5
+                    }
                 }
+                body = JSON.stringify(body)
+                fetch('publicProduct',{method:'POST',body})
+                    .then(json => json.json()
+                    .then(resp => console.log(resp))
+                    )
             }
-            body = JSON.stringify(body)
-            fetch('publicProduct',{method:'POST',body})
-                .then(json => json.json()
-                .then(resp => console.log(resp))
-            )
+            
+            
+            let index = 0;
+            verProductos.onclick = () => {
+                fetch('getProducts?index='+index)
+                    .then(json => json.json()
+                        .then(resp => {
+                            console.log(resp)
+                            index++
+                        })  
+                    )
+            }
+            
+            filtros.onclick = () => {
+                
+                fetch('getProductsForFilter?term=zl&category=0&condition=0&user=',)
+                    .then(json => json.json()
+                        .then(resp => {
+                            console.log(resp)
+                            index++
+                        })  
+                    )
+            
+            }
+            
+            
+            registrarse.onclick = () => {
+                
+                let body = {
+                    username: 'Cristina Roman',
+                    description: 'Cliente con ganas de comprar xd',
+                    email: 'crisdenawa@jnx.com',
+                    password: 'qwertasd',
+                    confirmPassword: 'qwertasd',
+                    balance: 64362
+                }
+                
+                body = JSON.stringify(body)
+                
+                fetch('register',{method:'POST',body})
+                        .then(json => json.json()
+                            .then(resp => console.log(resp))
+                        )
+                
+            }
+            
+            
+            postUserReview.onclick = () => {
+                
+                let body = {
+                    user: {id:6},
+                    target: {id:3},
+                    content: 'Muy buen vendedor',
+                    appreciation: 4
+                }
+                
+                body = JSON.stringify(body)
+                
+                fetch('sendUserReview',{method:'POST',body})
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                    )
+                
+                
+            }
+            
+            postProductReview.onclick = () => {
+                
+                let body = {
+                    user: {id:6},
+                    target: {id:3},
+                    content: 'Muy buen producto',
+                    appreciation: 4
+                }
+                
+                body = JSON.stringify(body)
+                
+                fetch('sendProductReview',{method:'POST',body})
+                        .then(json => json.text()
+                        .then(resp => console.log(resp))
+                    )
+                
+                
+            }
+            
+//            prueba.onclick = () => {
+//                
+//                fetch('probar?nombre=ads&category=')
+//                    .then(json => json.text()
+//                        .then(resp => {
+//                            console.log(resp)
+//                        })  
+//                    )
+//                
+//            }
+            
             /*file.onchange = () => {
                 let formData = new FormData()
                 formData.append('img',file.files[0]) 
