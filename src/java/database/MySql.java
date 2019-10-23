@@ -9,7 +9,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
+import jnxpress.Filter;
 import jnxpress.Product;
+import jnxpress.Review;
 
 import jnxpress.User;
 
@@ -29,13 +31,13 @@ public class MySql {
             con = DriverManager.getConnection(url);
             stm = con.createStatement();
             
-            return new Respuesta(200 ,"OK!");
+            return new Respuesta(200 ,true, "OK!");
         }
         catch(ClassNotFoundException e) {
-            return new Respuesta(500,e.getMessage());
+            return new Respuesta(500,false, e.getMessage());
         }
         catch(SQLException e) {
-            return new Respuesta(404,e.getMessage());
+            return new Respuesta(404,false, e.getMessage());
         }
     }
     
@@ -50,17 +52,19 @@ public class MySql {
         }
     }
     
-    public static Respuesta<ArrayList<Product>> getProductos() {
+    public static Respuesta<ArrayList<Product>> getProducts(int index) {
+        
+        index *= 4;
         
         Respuesta<ArrayList<Product>> respuesta = getConnection();
         
         ArrayList<Product> listProducts = new ArrayList();
         
-        if (respuesta.getCode() == 200) {
+        if (respuesta.isOk()) {
             
             try {
                 
-                String query = "SELECT * FROM products";
+                String query = "SELECT * FROM products ORDER BY `product-id` DESC LIMIT " + index + ",4" ;
                 
                 int idCategory;
                 int idCondition;
@@ -85,7 +89,7 @@ public class MySql {
                 closeConnection();
             }
             catch(SQLException e) {
-                respuesta.setCode(404);
+                respuesta.setStatus(404);
                 respuesta.setMessage(e.getMessage());
             }
             
@@ -96,72 +100,11 @@ public class MySql {
         return respuesta;
     }
     
-    public static Respuesta<User> getUser(String email, String password) {
-        
-        Respuesta<User> respuesta = getConnection();
-        
-        User usuario;
-        
-        
-        
-        if (respuesta.getCode() == 200) {
-            
-            try {
-                
-                String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
-                //String query =  "SELECT * FROM `users` WHERE `user-email` = 'c.nahu.roman@gmail.com'";
-
-                          
-                usuario = new User();
-                
-                rs = stm.executeQuery(query);
-                
-                rs.next();
-                
-                String passwordDB = rs.getString("user-password");     
-                
-                
-                
-                if (password.equals(passwordDB)) {
-                    usuario = new User(
-                        rs.getInt("user-id"),
-                        rs.getString("user-username"),
-                        rs.getString("user-email"),
-                        rs.getFloat("user-balance"),
-                        rs.getInt("user-sales"),
-                        rs.getInt("user-purchases"),
-                        rs.getInt("user-appreciation")
-                    );
-                    
-                    respuesta.setContent(usuario);
-                    
-                }else {
-                    
-                    respuesta.setCode(403);
-                    respuesta.setMessage("Usuario o contraseña incorrectas");
-                    
-                }
-                
-                closeConnection();
-            }
-            catch(SQLException e) {
-                    respuesta.setCode(404);
-                    respuesta.setMessage(e.getMessage());
-            }
-            
-            
-            
-        }
-        
-        return respuesta;
-    }
-    
-    
     public static Respuesta<String> postProduct(Product product){
         
         Respuesta<String> respuesta = getConnection();
        
-        if (respuesta.getCode() == 200) {
+        if (respuesta.isOk()) {
             
             try {
                 
@@ -192,10 +135,11 @@ public class MySql {
                 7000.00, 5, 'Despues arreglo esto xd', 1, 1)";*/
                 
                 respuesta.setContent(query);
-                int num = stm.executeUpdate(query);
+                stm.executeUpdate(query);
+                closeConnection();
             }
             catch(SQLException e) {
-                respuesta.setCode(500);
+                respuesta.setStatus(500);
                 respuesta.setMessage(e.getMessage());
             }
         }
@@ -203,5 +147,274 @@ public class MySql {
         
         return respuesta;
     }
+    
+    public static Respuesta<ArrayList<Product>> getProductsForFilter(Filter filter) {
+        
+        Respuesta<ArrayList<Product>> respuesta = getConnection();
+        ArrayList<Product> listProduct = new ArrayList<>();
+        
+        if (respuesta.isOk()) {
+            String query = "SELECT * FROM `products` WHERE ";
+            boolean addAnd = false;
+            
+            if (!filter.getTerm().equals("")) {
+                query += "`product-name` LIKE '%" + filter.getTerm() + "%'";
+                addAnd = true;
+            }
+            if (filter.getCategory().getId() > 0) {
+                if (addAnd) {
+                    query += " AND ";
+                }
+                query += "`category-id` = " + filter.getCategory().getId();
+            }
+            if (filter.getCondition().getId() > 0) {
+                if (addAnd) {
+                    query += " AND ";
+                }
+                query += "`condition-id` = " + filter.getCondition().getId();
+            }
+            
+            try {
+                
+                rs = stm.executeQuery(query);
+                
+                while(rs.next()) {
+                    
+                    Product producto = new Product(
+                        rs.getInt("product-id"),
+                        rs.getString("product-name"),
+                        rs.getString("product-description"),
+                        rs.getInt("product-price"),
+                        rs.getInt("product-stock"),
+                        rs.getString("product-image"),
+                        rs.getString("product-date")
+                    );
+                    
+                    listProduct.add(producto);
+                    
+                }
+                
+                respuesta.setContent(listProduct);
+                
+            }catch(SQLException e) {
+                respuesta.setStatus(404);
+                respuesta.setMessage(e.getMessage());
+            }
+            
+            
+        }
+        
+        return respuesta;
+    }
+    
+    public static Respuesta<String> getUserForId(int id) {
+        
+        Respuesta respuesta = getConnection();
+    
+        if (respuesta.isOk()) {
+            
+            try {
+                
+                String query = "Select * FROM `users` WHERE `user-id` = " + id;
+                
+                rs = stm.executeQuery(query);
+                
+                if (rs.next()) {
+                    
+                    respuesta.setStatus(200);
+                    respuesta.setOk(true);
+                    respuesta.setMessage("OK!");
+                    
+                }else{
+                    
+                    respuesta.setStatus(403);
+                    respuesta.setOk(false);
+                    respuesta.setMessage("Usuario no encontrado!");
+                
+                }
+                
+                
+            }catch (SQLException e) {
+                
+                respuesta.setStatus(500);
+                respuesta.setOk(false);
+                respuesta.setMessage(e.getMessage());
+                
+            }
+            
+        }
+        
+        return respuesta;
+        
+    }
+    
+    public static Respuesta<String> getUserForUsername(String username) {
+        
+        Respuesta<String> respuesta = getConnection();
+        
+        if (respuesta.isOk()) {
+            
+            try {
+                
+                String query = "SELECT * FROM users WHERE `user-username` = '" + username + "'";
+                
+                rs = stm.executeQuery(query);
+                
+                if (rs.next()) {
+                    
+                    respuesta.setStatus(403);
+                    respuesta.setMessage("Nombre de usuario ya existente!");
+                    respuesta.setOk(false);
+                    
+                }else {
+                    
+                    respuesta.setStatus(200);
+                    respuesta.setMessage("OK!");
+                    
+                }
+                
+                closeConnection();
+                
+            }
+            catch(SQLException e) {
+                    respuesta.setStatus(404);
+                    respuesta.setMessage(e.getMessage());
+                    respuesta.setOk(false);
+            }
+            
+        }
+
+        return respuesta;
+        
+    }
+    
+    public static Respuesta<String> getUserForEmail(String email) {
+        
+        Respuesta<String> respuesta = getConnection();
+        
+        if (respuesta.isOk()) {
+            
+            try {
+                
+                String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
+                
+                rs = stm.executeQuery(query);
+                
+                if (rs.next()) {
+                    
+                    respuesta.setStatus(403);
+                    respuesta.setMessage("El email ingresado ya esta siendo ocupado!");
+                    respuesta.setOk(false);
+                    
+                }else {
+                    
+                    respuesta.setStatus(200);
+                    respuesta.setMessage("OK!");
+                    
+                }
+                
+                closeConnection();
+                
+            }
+            catch(SQLException e) {
+                    respuesta.setStatus(404);
+                    respuesta.setMessage(e.getMessage());
+                    respuesta.setOk(false);
+            }
+            
+        }
+
+        return respuesta;
+        
+    }
+    
+    public static Respuesta postUser(User user) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (respuesta.isOk()) {
+            
+            try {
+                String query = "INSERT INTO `users` ("
+                        + "`user-username`,"
+                        + "`user-description`,"
+                        + "`user-email`,"
+                        + "`user-password`,"
+                        + "`user-balance`"
+                        + ") VALUES ("
+                        + "'" + user.getUsername() + "',"
+                        + "'" + user.getDescription() + "',"
+                        + "'" + user.getEmail() + "',"
+                        + "'" + user.getPassword() + "',"
+                        + user.getBalance()
+                        + ")";
+                
+                stm.executeUpdate(query);
+                
+                
+            }catch(SQLException e) {
+                
+                respuesta.setStatus(500);
+                respuesta.setOk(false);
+                respuesta.setMessage(e.getMessage());
+                
+            }
+            
+            
+        }
+        
+        
+        
+        
+        return respuesta;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public static Respuesta postUserReview(Review<User> review) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (respuesta.isOk()) {
+            
+           try {
+               
+               String query = "INSERT INTO `users-reviews` ("
+                       + "`user-id`,"
+                       + "`target-id`,"
+                       + "`user-review-content`,"
+                       + "`user-review-appreciation`"
+                       + ") VALUES ("
+                       + review.getUser().getId() + ","
+                       + review.getTarget().getId() + ","
+                       + "'" + review.getContent() + "',"
+                       + "'" + review.getAppreciation() + "'"
+                       + ")";
+               
+               stm.executeUpdate(query);
+               
+           } catch(SQLException e) {
+                
+                respuesta.setStatus(500);
+                respuesta.setOk(false);
+                respuesta.setMessage(e.getMessage());
+                
+           }
+            
+        }
+        
+        
+        return respuesta;
+    }
+    
+    
+    
     
 }
