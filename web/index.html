@@ -132,7 +132,7 @@ and open the template in the editor.
                 body = JSON.stringify(body)
                 
                 fetch('sendUserReview',{method:'POST',body})
-                        .then(json => json.json()
+                        .then(json => json.text()
                         .then(resp => console.log(resp))
                     )
                 
