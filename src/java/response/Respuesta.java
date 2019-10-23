@@ -1,38 +1,48 @@
 package response;
 
 public class Respuesta<T> {
-    private int _code;
-    private String _message;
-    private T _content;
+    private int status;
+    private boolean ok;
+    private String message;
+    private T content;
 
-    public Respuesta(int code, String message) {
-        _code = code;
-        _message = message;
+    public Respuesta(int status, boolean ok, String message) {
+        this.status = status;
+        this.ok = ok;
+        this.message = message;
     }
 
     public T getContent() {
-        return _content;
+        return content;
     }
 
-    public void setContent(T _content) {
-        this._content = _content;
+    public void setContent(T content) {
+        this.content = content;
     }
     
-    
-    public int getCode() {
-        return _code;
+    public int getStatus() {
+        return status;
     }
 
-    public void setCode(int _code) {
-        this._code = _code;
+    public void setStatus(int status) {
+        this.status = status;
     }
+
+    public boolean isOk() {
+        return ok;
+    }
+
+    public void setOk(boolean ok) {
+        this.ok = ok;
+    }
+    
 
     public String getMessage() {
-        return _message;
+        return message;
     }
 
-    public void setMessage(String _message) {
-        this._message = _message;
+    public void setMessage(String message) {
+        this.message = message;
     }
     
     
