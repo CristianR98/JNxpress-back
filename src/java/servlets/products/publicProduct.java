@@ -32,7 +32,7 @@ public class publicProduct extends HttpServlet {
             if (product.validate()) {
                 respuesta = MySql.postProduct(product);
             }else {
-                respuesta = new Respuesta(403,"No autorizado!");
+                respuesta = new Respuesta(403, false, "No autorizado!");
                 respuesta.setContent("Ingrese los datos correctamente!");
             }
             

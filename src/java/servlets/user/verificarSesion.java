@@ -51,19 +51,6 @@ public class verificarSesion extends HttpServlet {
             
             Gson json = new Gson();
             
-            if ( user != null ) {
-                
-                Respuesta respuesta = new Respuesta(403,"Sesión no iniciada!");
-                out.println(json.toJson(respuesta));
-                
-            }else{
-                
-                Respuesta<User> respuesta = new Respuesta(200,"Sesión no iniciada");
-                respuesta.setContent(user);
-                out.println(json.toJson(respuesta));
-                
-            }
-            
             
             out.println(json.toJson(session.getAttribute("test")));
                     

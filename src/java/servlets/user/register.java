@@ -6,6 +6,7 @@
 package servlets.user;
 
 import com.google.gson.Gson;
+import database.MySql;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import jnxpress.User;
+import response.Respuesta;
 
 /**
  *
@@ -34,9 +37,19 @@ public class register extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. 
-            out.println(request.getParameter("password"));*/
-            out.println(request.getParameter("password"));
+            Gson json = new Gson();
+            
+            User user = json.fromJson(request.getReader().readLine(), User.class);
+            
+            Respuesta respuesta = user.validate();
+            
+            if (respuesta.isOk()) {
+                
+                respuesta = MySql.postUser(user);
+                
+            }
+            
+            out.println(json.toJson(respuesta));
         }
     }
 

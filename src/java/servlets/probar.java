@@ -12,6 +12,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import jnxpress.Category;
+import jnxpress.Condition;
+import jnxpress.Filter;
 import jnxpress.User;
 
 /**
@@ -36,16 +39,11 @@ public class probar extends HttpServlet {
             /* TODO output your page here. You may use following sample code. */
             Gson json = new Gson();
             
-            User persona = new User();
-            persona = json.fromJson(request.getReader().readLine(), persona.getClass());
+            String term = request.getParameter("nombre");
+            //int category = Integer.parseInt(request.getParameter("category"));
+
             
             
-            String nombre = request.getParameter("nombre");
-            String apellido = request.getParameter("apellido");
-            
-            out.println(request.getReader().readLine());
-            out.println(persona.getBalance());
-            out.println(nombre + " " + apellido);
         }
     }
 

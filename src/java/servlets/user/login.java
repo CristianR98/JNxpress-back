@@ -49,18 +49,6 @@ public class login extends HttpServlet {
             
             */
                 
-            String email = request.getParameter("email");
-            String password= request.getParameter("password");
-            
-            Respuesta<User> respuesta = MySql.getUser(email, password);
-            
-            session.setAttribute("test","Funciona!");
-            
-            if (respuesta.getCode() == 200) {
-                session.setAttribute("user",respuesta.getContent());
-            }
-            
-            out.println(new Gson().toJson(respuesta));
             
             }
         }
