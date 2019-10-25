@@ -5,7 +5,8 @@
  */
 package jnxpress;
 
-import database.MySql;
+
+import database.UsersDB;
 import response.Respuesta;
 
 /**
@@ -13,12 +14,11 @@ import response.Respuesta;
  * @author Nahu
  */
 public class User {
-    public int id;
+    private int id;
     private String username;
     private String description;
     private String email;
     private String password;
-    private String confirmPassword;
     private float balance;
     private int sales;
     private int purchase;
@@ -110,23 +110,14 @@ public class User {
         this.password = password;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
-    
     public Respuesta existDB() {
-        return new Respuesta(200,true,"que onda");
-        //return MySql.getUserForId(id);
+        return UsersDB.getUserForId(id);
     }
     
     public Respuesta validate() {
         
         
-        Respuesta respuesta = validatePassword();
+        Respuesta respuesta = validatePassword(password);
         if (!respuesta.isOk()) {
             return respuesta;
         }
@@ -142,22 +133,19 @@ public class User {
         return respuesta;
     }
     
-    private Respuesta validatePassword() {
+    public static Respuesta validatePassword(String password) {
         
-        Respuesta respuesta;
+        Respuesta respuesta = new Respuesta(200, true, "");
         
-        if (!password.equals(confirmPassword)) {
-            respuesta = new Respuesta(403, false, "Los password no coinciden!");
-            return respuesta;
-        }
         if (password.length() >= 8 && password.length() <= 30) {
-            respuesta = new Respuesta(200, true, "");
+            
             return respuesta;
-        }else {
-            respuesta = new Respuesta(403, false, "El password de usuario debe tener entre 8 y 30 digitos.");
-            return respuesta;
+            
         }
+            
+        respuesta = new Respuesta(403, false, "El password de usuario debe tener entre 8 y 30 digitos.");
         
+        return respuesta;
         
     }
     
@@ -167,7 +155,7 @@ public class User {
         
         if (username.length() >= 6 && username.length() <= 20) {
             
-            respuesta = MySql.getUserForUsername(username);
+            respuesta = UsersDB.getUserForUsername(username);
             
         }else {
             respuesta = new Respuesta(403, false, "El nombre de usuario debe tener entre 6 y 20 digitos.");
@@ -178,7 +166,7 @@ public class User {
     
     private Respuesta validateEmail() { 
                 
-        return MySql.getUserForEmail(email);
+        return UsersDB.getUserForEmail(email);
         
     }
     

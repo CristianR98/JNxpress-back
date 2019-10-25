@@ -15,6 +15,7 @@ public class Review<T> {
     private T target;
     private String content;
     private int appreciation;
+    private String date;
 
     
     public Class getType() {
@@ -59,6 +60,14 @@ public class Review<T> {
 
     public void setAppreciation(int appreciation) {
         this.appreciation = appreciation;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
     
     
