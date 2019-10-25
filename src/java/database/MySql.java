@@ -15,7 +15,7 @@ public class MySql {
     protected static String userDB = "root";
     protected static String password = "";
     protected static String database = "jnxpress";
-    protected static String url = "jdbc:mysql://localhost:3306/" + database + "?user=" + userDB + "&password=" + password;
+    protected static String url = "jdbc:mysql://localhost:3307/" + database + "?user=" + userDB + "&password=" + password;
     
     protected static Respuesta getConnection() {
         

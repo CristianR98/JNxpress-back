@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.6.5.2
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-10-2019 a las 04:05:39
--- Versión del servidor: 10.1.38-MariaDB
--- Versión de PHP: 7.3.3
+-- Tiempo de generación: 26-10-2019 a las 01:45:23
+-- Versión del servidor: 10.1.21-MariaDB
+-- Versión de PHP: 5.6.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -21,6 +19,32 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `jnxpress`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `interests`
+--
+
+CREATE TABLE `interests` (
+  `category-id` tinyint(6) NOT NULL,
+  `user-id` smallint(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+--
+-- Volcado de datos para la tabla `interests`
+--
+
+INSERT INTO `interests` (`category-id`, `user-id`) VALUES
+(1, 2),
+(1, 2),
+(1, 2),
+(1, 2),
+(2, 2),
+(4, 29),
+(7, 29),
+(5, 30),
+(9, 30);
 
 -- --------------------------------------------------------
 
@@ -46,7 +70,6 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product-id`, `user-id`, `product-name`, `product-description`, `product-price`, `product-stock`, `product-image`, `product-date`, `category-id`, `condition-id`) VALUES
-(1, 1, 'Topper Street Nova - Rojas', 'Otra descripcion', 588.00, 24, 'url', '2019-10-06 00:19:46', 5, 1),
 (2, 2, 'Topper Street Nova - Rojas', 'Otra descripcion', 588.00, 24, 'url', '2019-10-06 00:51:02', 5, 1),
 (3, 1, 'Moto one', 'Un celular, no tengo ganas de buscar la descripción pero si de escribir esto xd.', 7000.00, 5, 'Despues arreglo esto xd', '2019-10-22 00:07:16', 1, 1),
 (4, 1, 'Topper Street Nova', 'Zapatillas peolas xd', 1200.00, 23, 'noseeeep', '2019-10-22 00:14:24', 1, 2),
@@ -175,7 +198,31 @@ INSERT INTO `users` (`user-id`, `user-username`, `user-email`, `user-password`, 
 (3, 'Cristian', 'jnxpress@jnx.com', 'qwerty1fkahofijafjia', 10000.00, 'Nueva descripcion', 0, 0, 0),
 (4, 'Cristina', 'nahu.r@jnx.com', 'qwertasd', 10000.00, 'Nueva descripcion', 0, 0, 0),
 (5, 'Pepito', 'maru.chan@jnx.com', 'qwertasd', 47283.00, 'Nueva descripcion', 0, 0, 0),
-(6, 'Pepito', 'crisdenawa@jnx.com', 'qwertasd', 64362.00, 'Nueva descripcion', 0, 0, 0);
+(6, 'Pepito', 'crisdenawa@jnx.com', 'qwertasd', 64362.00, 'Nueva descripcion', 0, 0, 0),
+(7, 'CristianR98', 'cristian@gmail.com', 'cristian', 123.00, 'null', 0, 0, 0),
+(8, 'CristianR982', 'cristianR@gmail.com', 'cristian', 123.00, 'null', 0, 0, 0),
+(9, 'CristianR982a', 'cristianR@gmdail.com', 'cristian', 123.00, 'null', 0, 0, 0),
+(10, 'CristianR982a', 'cristianR@gmdail.com', 'cristian', 123.00, 'null', 0, 0, 0),
+(11, 'Cristina Romanasd', 'crisdenawa@jnxasd.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(12, 'Cristina RASomanasd', 'crisdenaa@jnxasd.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(13, 'Cristinomanasd', 'crisdena@jnxasd.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(14, 'Cdasdasd', 'casdasda@jnxad.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(15, 'Cdfsas', 'sadas@jnxad.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(16, 'Casdqweafs', 'sadasd@jnxad.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(17, 'Cfasfs', 'sadasd@jnxaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(18, 'Cfasaffsasaf', 'saafd@jnxaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(19, 'yutywas', 'saafasd@jnxaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(20, 'yutywa', 'saafasd@jnxaaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(21, 'yutywaa', 'saaffasd@jnxaaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(22, 'yutqwra', 'saeq@jnxaaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(23, 'yutqwrdasa', 'saeq@jnxfaaaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(24, 'rqrwqsa', 'saeq@jaaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(25, 'rrqwrwfa', 'saeq@jaaaf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(26, 'rrasdafgqwfa', 'saeq@jaqrf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(27, 'rrjgkffa', 'saeq@jafsf.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(28, 'jgftrucv', 'saeq@jns.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(29, 'jgskieet', 'saeq@jnse.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0),
+(30, 'Cristian389', 'Cress@jnse.com', 'qwertasd', 64362.00, 'Cliente con ganas de comprar xd', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -214,6 +261,13 @@ INSERT INTO `users-reviews` (`user-review-id`, `user-id`, `target-id`, `user-rev
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `interests`
+--
+ALTER TABLE `interests`
+  ADD KEY `user-id` (`user-id`),
+  ADD KEY `category-id` (`category-id`);
 
 --
 -- Indices de la tabla `products`
@@ -268,40 +322,41 @@ ALTER TABLE `users-reviews`
 --
 ALTER TABLE `products`
   MODIFY `product-id` smallint(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
 --
 -- AUTO_INCREMENT de la tabla `products-categories`
 --
 ALTER TABLE `products-categories`
   MODIFY `category-id` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
-
 --
 -- AUTO_INCREMENT de la tabla `products-condition`
 --
 ALTER TABLE `products-condition`
   MODIFY `condition-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
 --
 -- AUTO_INCREMENT de la tabla `products-reviews`
 --
 ALTER TABLE `products-reviews`
   MODIFY `product-review-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `user-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
+  MODIFY `user-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 --
 -- AUTO_INCREMENT de la tabla `users-reviews`
 --
 ALTER TABLE `users-reviews`
   MODIFY `user-review-id` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `interests`
+--
+ALTER TABLE `interests`
+  ADD CONSTRAINT `interests_ibfk_1` FOREIGN KEY (`user-id`) REFERENCES `users` (`user-id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `interests_ibfk_2` FOREIGN KEY (`category-id`) REFERENCES `products-categories` (`category-id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `products`
@@ -323,7 +378,6 @@ ALTER TABLE `products-reviews`
 ALTER TABLE `users-reviews`
   ADD CONSTRAINT `users-reviews_ibfk_1` FOREIGN KEY (`user-id`) REFERENCES `users` (`user-id`),
   ADD CONSTRAINT `users-reviews_ibfk_2` FOREIGN KEY (`target-id`) REFERENCES `users` (`user-id`);
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

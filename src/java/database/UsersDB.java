@@ -7,6 +7,7 @@ package database;
 
 import static database.MySql.getConnection;
 import java.sql.SQLException;
+import jnxpress.Category;
 import jnxpress.User;
 import response.Respuesta;
 
@@ -148,44 +149,32 @@ public class UsersDB extends MySql{
     }
     
     public static Respuesta<String> getUserForEmail(String email) {
+                   
+        Respuesta respuesta = new Respuesta(200, true, "OK!");
         
-        Respuesta<String> respuesta = getConnection();
-        
-        if (respuesta.isOk()) {
-            
-            try {
+        try {
+              
+            String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
                 
-                String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
+            rs = stm.executeQuery(query);
                 
-                rs = stm.executeQuery(query);
-                
-                if (rs.next()) {
+            if (rs.next()) {
                     
-                    respuesta.setStatus(403);
-                    respuesta.setMessage("El email ingresado ya esta siendo ocupado!");
-                    respuesta.setOk(false);
+                respuesta = new Respuesta(403, false, "El email ingresado ya esta siendo ocupado!");
                     
-                }else {
-                    
-                    respuesta.setStatus(200);
-                    respuesta.setMessage("OK!");
-                    
-                }
-                
-                closeConnection();
-                
             }
-            catch(SQLException e) {
-                    respuesta.setStatus(404);
-                    respuesta.setMessage(e.getMessage());
-                    respuesta.setOk(false);
-            }
-            
+                
+        }catch(SQLException e) {
+                respuesta = exeption(e);
         }
-
-        return respuesta;
         
+            
+        return respuesta;
+            
     }
+
+        
+    
     
     public static Respuesta<User> getUser(int id) {
         
@@ -229,6 +218,14 @@ public class UsersDB extends MySql{
         
         Respuesta respuesta = getConnection();
         
+        if(!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        
+        
+        respuesta = getUserForEmail(user.getEmail());
+        
         if (respuesta.isOk()) {
             
             try {
@@ -247,6 +244,31 @@ public class UsersDB extends MySql{
                         + ")";
                 
                 stm.executeUpdate(query);
+                
+                query = "SELECT `user-id` FROM `users` WHERE `user-email` = '" + user.getEmail() + "'";
+                
+                rs = stm.executeQuery(query);
+                
+                rs.next();
+                
+                int id = rs.getInt("user-id");
+                
+                for (int i = 0; i < user.getInterests().size(); i++) {
+                    
+                    Category category = user.getInterests().get(i);
+                    
+                    query = "INSERT INTO `interests` ("
+                            + "`category-id`"
+                            + "`user-id`"
+                            + ") VALUES ("
+                            + category.getId() + ", "
+                            + user.getId() + ")";
+                    
+                    query = "INSERT INTO `interests` (`category-id`, `user-id`) VALUES (" + category.getId() + ", " + id + ")";
+                    
+                    stm.executeUpdate(query);
+                    respuesta.setContent(i);
+                }
                 
                 
             }catch(SQLException e) {

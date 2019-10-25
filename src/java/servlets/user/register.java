@@ -45,12 +45,13 @@ public class register extends HttpServlet {
             Respuesta respuesta = user.validate();
             
             if (respuesta.isOk()) {
-                
+            
                 respuesta = UsersDB.postUser(user);
-                
+
             }
             
             out.println(json.toJson(respuesta));
+
         }
     }
 

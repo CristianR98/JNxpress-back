@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import jnxpress.Filter;
 import jnxpress.Product;
+import jnxpress.User;
 import response.Respuesta;
 
 
@@ -268,6 +269,65 @@ public class ProductsDB extends MySql {
         }
         
         closeConnection();
+        
+        return respuesta;
+        
+    }
+    
+    public static Respuesta deleteProduct( Product product ) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        
+        respuesta = checkUpdate(product.getUser().getId(), product.getId());
+        
+        if(!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        
+        try {
+            
+            String query = "DELETE FROM `products` WHERE `product-id` = " + product.getId();
+
+            stm.executeUpdate(query);
+            
+        }catch (SQLException e) {
+            
+            respuesta = exeption(e);
+            
+        }
+        
+        
+        return respuesta;
+        
+    }
+    
+    private static Respuesta checkUpdate(int idUser, int idProduct) {
+        
+        Respuesta respuesta = UsersDB.existDB(idUser);
+        
+        if (!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        respuesta = existDB(idProduct);
+        
+        if (!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        
+        respuesta = isYourProduct(idUser, idProduct);
+        
+        if (!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
         
         return respuesta;
         

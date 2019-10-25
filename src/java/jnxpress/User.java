@@ -7,6 +7,7 @@ package jnxpress;
 
 
 import database.UsersDB;
+import java.util.ArrayList;
 import response.Respuesta;
 
 /**
@@ -23,6 +24,7 @@ public class User {
     private int sales;
     private int purchase;
     private int appreciation;
+    private ArrayList<Category> interests;
 
     public User(int id, String username, String email, float balance, int sales, int purchase, int appreciation) {
         this.id = id;
@@ -78,6 +80,16 @@ public class User {
         this.appreciation = appreciation;
     }
 
+    public ArrayList<Category> getInterests() {
+        return interests;
+    }
+
+    public void setInterests(ArrayList<Category> interests) {
+        this.interests = interests;
+    }
+
+    
+    
     public int getId() {
         return id;
     }
@@ -165,8 +177,18 @@ public class User {
     }
     
     private Respuesta validateEmail() { 
-                
-        return UsersDB.getUserForEmail(email);
+        
+        Respuesta respuesta;
+        
+        if (email.length() <= 60) {
+            
+            respuesta = UsersDB.getUserForUsername(username);
+            
+        }else {
+            respuesta = new Respuesta(403, false, "El email no debe ser menor de 60 digitos.");
+        }
+        
+        return respuesta;
         
     }
     

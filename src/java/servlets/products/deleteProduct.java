@@ -1,37 +1,30 @@
-package servlets.user;
+package servlets.products;
 
 import com.google.gson.Gson;
-import database.UsersDB;
+import database.ProductsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.User;
+import jnxpress.Product;
 import response.Respuesta;
 
 
-public class putPassword extends HttpServlet {
+public class deleteProduct extends HttpServlet {
+
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("json/html;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            int idUser = Integer.parseInt(request.getParameter("id"));
-            String actualPassword = request.getParameter("actualPassword");
-            String newPassword = request.getParameter("newPassword");
+            Product product = json.fromJson(request.getReader().readLine(), Product.class);
             
-            Respuesta respuesta = User.validatePassword(newPassword);
-            
-            if (respuesta.isOk()) {
-            
-                respuesta = UsersDB.putPassword(idUser, actualPassword, newPassword);
-                
-            }
+            Respuesta respuesta = ProductsDB.deleteProduct(product);
             
             out.println(json.toJson(respuesta));
             

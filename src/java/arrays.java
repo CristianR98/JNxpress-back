@@ -1,39 +1,43 @@
-package servlets.user;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 import com.google.gson.Gson;
-import database.UsersDB;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.User;
-import response.Respuesta;
 
+/**
+ *
+ * @author Comunidad IT - 6
+ */
+public class arrays extends HttpServlet {
 
-public class putPassword extends HttpServlet {
-    
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("json/html;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            int idUser = Integer.parseInt(request.getParameter("id"));
-            String actualPassword = request.getParameter("actualPassword");
-            String newPassword = request.getParameter("newPassword");
+            ArrayList arrays = json.fromJson(request.getReader().readLine(), ArrayList.class);
             
-            Respuesta respuesta = User.validatePassword(newPassword);
-            
-            if (respuesta.isOk()) {
-            
-                respuesta = UsersDB.putPassword(idUser, actualPassword, newPassword);
-                
-            }
-            
-            out.println(json.toJson(respuesta));
+            out.println(json.toJson(arrays.get(2)));
             
         }
     }

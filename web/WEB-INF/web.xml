@@ -44,6 +44,14 @@
         <servlet-name>putPassword</servlet-name>
         <servlet-class>servlets.user.putPassword</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>deleteProduct</servlet-name>
+        <servlet-class>servlets.products.deleteProduct</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>arrays</servlet-name>
+        <servlet-class>arrays</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>getProducts</servlet-name>
         <url-pattern>/getProducts</url-pattern>
@@ -87,6 +95,14 @@
     <servlet-mapping>
         <servlet-name>putPassword</servlet-name>
         <url-pattern>/putPassword</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>deleteProduct</servlet-name>
+        <url-pattern>/deleteProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>arrays</servlet-name>
+        <url-pattern>/arrays</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
