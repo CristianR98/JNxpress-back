@@ -27,7 +27,17 @@ and open the template in the editor.
         
         <button id="postUserReview" >Enviar review a usuario</button><br><br>
         
+        <button id="getUserReview" >Ver review a usuario</button><br><br>
+        
         <button id="postProductReview" >Enviar review a producto</button><br><br>
+        
+        <button id="getProductReview" >Ver review a producto</button><br><br>
+        
+        <button id="editProduct" >Editar producto</button><br><br>
+        
+        <button id="editInfo" >Editar informacion</button><br><br>
+        
+        <button id="editPassword" >Editar password</button><br><br>
         
         <script>
             let file = document.getElementById("file")
@@ -37,6 +47,11 @@ and open the template in the editor.
             let registrarse = document.getElementById("registrarse")
             let postUserReview = document.getElementById("postUserReview")
             let postProductReview = document.getElementById("postProductReview")
+            let getUserReview = document.getElementById("getUserReview")
+            let getProductReview = document.getElementById("getProductReview")
+            let editProduct = document.getElementById("editProduct")
+            let editInfo = document.getElementById("editInfo")
+            let editPassword = document.getElementById("editPassword")
             
             publicar.onclick = () => {
                 let body = {
@@ -131,8 +146,8 @@ and open the template in the editor.
                 
                 body = JSON.stringify(body)
                 
-                fetch('sendUserReview',{method:'POST',body})
-                        .then(json => json.text()
+                fetch('postUserReview',{method:'POST',body})
+                        .then(json => json.json()
                         .then(resp => console.log(resp))
                     )
                 
@@ -150,8 +165,84 @@ and open the template in the editor.
                 
                 body = JSON.stringify(body)
                 
-                fetch('sendProductReview',{method:'POST',body})
+                fetch('postProductReview',{method:'POST',body})
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                    )
+                
+                
+            }
+            
+            let userReviewIndex = -1;
+            getUserReview.onclick = () => {
+                userReviewIndex++
+                fetch('getUserReview?idTarget=3&index='+userReviewIndex)
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                    )
+                
+            }
+            
+            let productReviewIndex = -1;
+            getProductReview.onclick = () => {
+                productReviewIndex++
+                fetch('getProductReview?idProduct=3&index='+productReviewIndex)
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                    )
+                
+            }
+            
+            
+            editProduct.onclick = () => {
+                
+                let body = {
+                    user: {
+                        id:2
+                    },
+                    id:2,
+                    name: 'Topper Street Nova - Rojas',
+                    description: 'Otra descripcion',
+                    price: 588,
+                    stock: 24,
+                    image: 'url',
+                    category: {
+                        id:5
+                    },
+                    condition: {
+                        id: 1
+                    }
+                }
+                
+                body = JSON.stringify(body)
+                
+                fetch('putProduct?idProduct=1',{method:'POST',body})
                         .then(json => json.text()
+                        .then(resp => console.log(resp))
+                )
+                
+            }
+            
+            editInfo.onclick = () => {
+                let body = {
+                    id: 1,
+                    username: 'JNxpress',
+                    description: 'Fundador de JNxpress!'
+                }
+                
+                body = JSON.stringify(body)
+                
+                fetch('putUserInfo',{method:'POST',body})
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                )
+                
+            }
+            
+            editPassword.onclick = () => {
+                
+                fetch('putPassword?id=1&actualPassword=5432asdfg&newPassword=quemirasxd')
+                        .then(json => json.json()
                         .then(resp => console.log(resp))
                     )
                 
