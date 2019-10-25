@@ -1,65 +1,34 @@
 package servlets.reviews;
 
 import com.google.gson.Gson;
-import database.MySql;
+import database.ReviewsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import jnxpress.Product;
 import jnxpress.Review;
-import jnxpress.User;
 import response.Respuesta;
 
-/**
- *
- * @author Nahu
- */
-public class sendUserReview extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+public class getProductReview extends HttpServlet {
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            
             Gson json = new Gson();
             
+            int idTarget = Integer.parseInt( request.getParameter("idProduct") );
+            int index = Integer.parseInt(request.getParameter("index"));
             
-            Review<User> review = json.fromJson(request.getReader().readLine(), Review.class );
-            
-            String userString = json.toJson(review.getTarget());
-
-            User user = json.fromJson(userString, User.class);
-            
-            review.setTarget(user);
-            
-            out.println(json.toJson(review));
-            
-            Respuesta respuesta = review.getUser().existDB();
-            
-            if (respuesta.isOk()) {
-                
-                respuesta = review.getTarget().existDB();
-                
-                if (respuesta.isOk()) {
-                    
-                    respuesta = MySql.postUserReview(review);
-                    
-                }
-                
-           }
+            Respuesta<ArrayList<Review<Product>>> respuesta = ReviewsDB.getProductReviews(idTarget, index);
             
             out.println(json.toJson(respuesta));
-            
             
             
         }

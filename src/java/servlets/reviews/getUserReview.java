@@ -1,40 +1,50 @@
-package servlets.products;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servlets.reviews;
 
+import com.google.gson.Gson;
+import database.MySql;
+import database.ReviewsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-import com.google.gson.Gson;
-import database.ProductsDB;
-import jnxpress.Product;
+import jnxpress.Review;
+import jnxpress.User;
 import response.Respuesta;
 
+/**
+ *
+ * @author Nahu
+ */
+public class getUserReview extends HttpServlet {
 
-public class publicProduct extends HttpServlet {
-    
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/json;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            String req = request.getReader().readLine();
+            int idTarget = Integer.parseInt( request.getParameter("idTarget") );
+            int index = Integer.parseInt(request.getParameter("index"));
             
-            Product product = json.fromJson(req, Product.class);
-            
-            Respuesta<String> respuesta;
-            
-            if (product.validate()) {
-                respuesta = ProductsDB.postProduct(product);
-            }else {
-                respuesta = new Respuesta(403, false, "No autorizado!");
-                respuesta.setContent("Ingrese los datos correctamente!");
-            }
+            Respuesta<ArrayList<Review<User>>> respuesta = ReviewsDB.getUserReviews(idTarget, index);
             
             out.println(json.toJson(respuesta));
             

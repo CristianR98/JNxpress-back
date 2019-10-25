@@ -1,39 +1,36 @@
-package servlets.products;
+package servlets.user;
 
+import com.google.gson.Gson;
+import database.UsersDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-import com.google.gson.Gson;
-import database.ProductsDB;
-import jnxpress.Product;
+import jnxpress.User;
 import response.Respuesta;
 
 
-public class publicProduct extends HttpServlet {
+public class putPassword extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/json;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            String req = request.getReader().readLine();
+            int idUser = Integer.parseInt(request.getParameter("id"));
+            String actualPassword = request.getParameter("actualPassword");
+            String newPassword = request.getParameter("newPassword");
             
-            Product product = json.fromJson(req, Product.class);
+            Respuesta respuesta = User.validatePassword(newPassword);
             
-            Respuesta<String> respuesta;
+            if (respuesta.isOk()) {
             
-            if (product.validate()) {
-                respuesta = ProductsDB.postProduct(product);
-            }else {
-                respuesta = new Respuesta(403, false, "No autorizado!");
-                respuesta.setContent("Ingrese los datos correctamente!");
+                respuesta = UsersDB.putPassword(idUser, actualPassword, newPassword);
+                
             }
             
             out.println(json.toJson(respuesta));

@@ -1,42 +1,67 @@
-package servlets.products;
+package servlets.reviews;
 
+import com.google.gson.Gson;
+import database.MySql;
+import database.ReviewsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-import com.google.gson.Gson;
-import database.ProductsDB;
-import jnxpress.Product;
+import jnxpress.Review;
+import jnxpress.User;
 import response.Respuesta;
 
+/**
+ *
+ * @author Nahu
+ */
+public class postUserReview extends HttpServlet {
 
-public class publicProduct extends HttpServlet {
-    
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/json;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            
             Gson json = new Gson();
             
-            String req = request.getReader().readLine();
             
-            Product product = json.fromJson(req, Product.class);
+            Review<User> review = json.fromJson(request.getReader().readLine(), Review.class );
             
-            Respuesta<String> respuesta;
+            String userString = json.toJson(review.getTarget());
+
+            User user = json.fromJson(userString, User.class);
             
-            if (product.validate()) {
-                respuesta = ProductsDB.postProduct(product);
-            }else {
-                respuesta = new Respuesta(403, false, "No autorizado!");
-                respuesta.setContent("Ingrese los datos correctamente!");
-            }
+            review.setTarget(user);
+            
+            out.println(json.toJson(review));
+            
+            Respuesta respuesta = review.getUser().existDB();
+            
+            if (respuesta.isOk()) {
+                
+                respuesta = review.getTarget().existDB();
+                
+                if (respuesta.isOk()) {
+                    
+                    respuesta = ReviewsDB.postUserReview(review);
+                    
+                }
+                
+           }
             
             out.println(json.toJson(respuesta));
+            
+            
             
         }
     }

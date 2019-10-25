@@ -1,43 +1,48 @@
-package servlets.products;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servlets.user;
 
+import com.google.gson.Gson;
+import database.UsersDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-import com.google.gson.Gson;
-import database.ProductsDB;
-import jnxpress.Product;
+import jnxpress.User;
 import response.Respuesta;
 
+/**
+ *
+ * @author Nahu
+ */
+public class putUserInfo extends HttpServlet {
 
-public class publicProduct extends HttpServlet {
-    
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/json;charset=UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            String req = request.getReader().readLine();
+            User user = json.fromJson(request.getReader().readLine(), User.class);
             
-            Product product = json.fromJson(req, Product.class);
-            
-            Respuesta<String> respuesta;
-            
-            if (product.validate()) {
-                respuesta = ProductsDB.postProduct(product);
-            }else {
-                respuesta = new Respuesta(403, false, "No autorizado!");
-                respuesta.setContent("Ingrese los datos correctamente!");
-            }
+            Respuesta<String> respuesta = UsersDB.putUserInfo(user);
             
             out.println(json.toJson(respuesta));
-            
         }
     }
 

@@ -1,21 +1,20 @@
-package servlets.products;
+package servlets.reviews;
 
+import com.google.gson.Gson;
+import database.ReviewsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
-import com.google.gson.Gson;
-import database.ProductsDB;
 import jnxpress.Product;
+import jnxpress.Review;
 import response.Respuesta;
 
 
-public class publicProduct extends HttpServlet {
-    
+public class postProductReview extends HttpServlet {
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/json;charset=UTF-8");
@@ -23,19 +22,16 @@ public class publicProduct extends HttpServlet {
             
             Gson json = new Gson();
             
-            String req = request.getReader().readLine();
+            Review<Product> review = json.fromJson(request.getReader().readLine(), Review.class);
             
-            Product product = json.fromJson(req, Product.class);
+            String userString = json.toJson(review.getTarget());
+
+            Product product = json.fromJson(userString, Product.class);
             
-            Respuesta<String> respuesta;
+            review.setTarget(product);
             
-            if (product.validate()) {
-                respuesta = ProductsDB.postProduct(product);
-            }else {
-                respuesta = new Respuesta(403, false, "No autorizado!");
-                respuesta.setContent("Ingrese los datos correctamente!");
-            }
-            
+            Respuesta respuesta = ReviewsDB.postProductReview(review);
+                    
             out.println(json.toJson(respuesta));
             
         }

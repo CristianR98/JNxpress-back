@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package servlets.reviews;
+package servlets.products;
 
 import com.google.gson.Gson;
-import database.MySql;
+import database.ProductsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -14,55 +9,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import jnxpress.Product;
-import jnxpress.Review;
 import response.Respuesta;
 
-/**
- *
- * @author Nahu
- */
-public class sendProductReview extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+public class putProduct extends HttpServlet {
+
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            
             Gson json = new Gson();
             
-            Review<Product> review = json.fromJson(request.getReader().readLine(), Review.class);
+            Product newProduct = json.fromJson(request.getReader().readLine(), Product.class);
             
-            String userString = json.toJson(review.getTarget());
-
-            Product product = json.fromJson(userString, Product.class);
+            int idProduct = Integer.parseInt(request.getParameter("idProduct"));
             
-            review.setTarget(product);
-            
-            Respuesta respuesta = review.getTarget().existDB();
-            
-            
-            if (respuesta.isOk()) {
-                
-                respuesta = review.getUser().existDB();
-                
-                if (respuesta.isOk()) {
-                    
-                    respuesta = MySql.postProductReview(review);
-                    
-                }
-                
-            }
+            Respuesta<String> respuesta = ProductsDB.putProduct(idProduct, newProduct);
             
             out.println(json.toJson(respuesta));
+            
             
         }
     }

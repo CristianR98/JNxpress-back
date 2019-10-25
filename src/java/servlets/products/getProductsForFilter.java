@@ -1,7 +1,7 @@
 package servlets.products;
 
 import com.google.gson.Gson;
-import database.MySql;
+import database.ProductsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class getProductsForFilter extends HttpServlet {
             
             Filter filter = new Filter(term,category,condition,user);
             
-            Respuesta<ArrayList<Product>> respuesta = MySql.getProductsForFilter(filter);
+            Respuesta<ArrayList<Product>> respuesta = ProductsDB.getProductsForFilter(filter);
             
             out.println(json.toJson(respuesta));
             

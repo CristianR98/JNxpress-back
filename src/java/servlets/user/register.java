@@ -7,6 +7,7 @@ package servlets.user;
 
 import com.google.gson.Gson;
 import database.MySql;
+import database.UsersDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -45,7 +46,7 @@ public class register extends HttpServlet {
             
             if (respuesta.isOk()) {
                 
-                respuesta = MySql.postUser(user);
+                respuesta = UsersDB.postUser(user);
                 
             }
             
