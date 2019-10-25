@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
-        <servlet-name>rew</servlet-name>
-        <servlet-class>rew</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>getProducts</servlet-name>
         <servlet-class>servlets.products.getProducts</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>probar</servlet-name>
-        <servlet-class>servlets.probar</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>files</servlet-name>
@@ -25,24 +17,36 @@
         <servlet-class>servlets.products.getProductsForFilter</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>sendUserReview</servlet-name>
-        <servlet-class>servlets.reviews.sendUserReview</servlet-class>
+        <servlet-name>postUserReview</servlet-name>
+        <servlet-class>servlets.reviews.postUserReview</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>sendProductReview</servlet-name>
-        <servlet-class>servlets.reviews.sendProductReview</servlet-class>
+        <servlet-name>postProductReview</servlet-name>
+        <servlet-class>servlets.reviews.postProductReview</servlet-class>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>rew</servlet-name>
-        <url-pattern>/rew</url-pattern>
-    </servlet-mapping>
+    <servlet>
+        <servlet-name>getUserReview</servlet-name>
+        <servlet-class>servlets.reviews.getUserReview</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getProductReview</servlet-name>
+        <servlet-class>servlets.reviews.getProductReview</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>putProduct</servlet-name>
+        <servlet-class>servlets.products.putProduct</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>putUserInfo</servlet-name>
+        <servlet-class>servlets.user.putUserInfo</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>putPassword</servlet-name>
+        <servlet-class>servlets.user.putPassword</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>getProducts</servlet-name>
         <url-pattern>/getProducts</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>probar</servlet-name>
-        <url-pattern>/probar</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>files</servlet-name>
@@ -57,12 +61,32 @@
         <url-pattern>/getProductsForFilter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>sendUserReview</servlet-name>
-        <url-pattern>/sendUserReview</url-pattern>
+        <servlet-name>postUserReview</servlet-name>
+        <url-pattern>/postUserReview</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>sendProductReview</servlet-name>
-        <url-pattern>/sendProductReview</url-pattern>
+        <servlet-name>postProductReview</servlet-name>
+        <url-pattern>/postProductReview</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getUserReview</servlet-name>
+        <url-pattern>/getUserReview</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getProductReview</servlet-name>
+        <url-pattern>/getProductReview</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>putProduct</servlet-name>
+        <url-pattern>/putProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>putUserInfo</servlet-name>
+        <url-pattern>/putUserInfo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>putPassword</servlet-name>
+        <url-pattern>/putPassword</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
