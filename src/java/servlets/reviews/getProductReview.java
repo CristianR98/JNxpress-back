@@ -9,8 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.Product;
-import jnxpress.Review;
+import models.Product;
+import models.Review;
 import response.Respuesta;
 
 
@@ -23,10 +23,9 @@ public class getProductReview extends HttpServlet {
             
             Gson json = new Gson();
             
-            int idTarget = Integer.parseInt( request.getParameter("idProduct") );
-            int index = Integer.parseInt(request.getParameter("index"));
+            int idTarget = Integer.parseInt( request.getParameter("productId"));
             
-            Respuesta<ArrayList<Review<Product>>> respuesta = ReviewsDB.getProductReviews(idTarget, index);
+            Respuesta<ArrayList<Review<Product>>> respuesta = ReviewsDB.getProductReviews(idTarget);
             
             out.println(json.toJson(respuesta));
             

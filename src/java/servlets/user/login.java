@@ -1,12 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets.user;
 
-import com.google.gson.Gson;
-import database.MySql;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -14,41 +7,39 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession ;
-import jnxpress.User;
+
+
+import com.google.gson.Gson;
+
+import models.User;
+
+import response.JWTAuth;
 import response.Respuesta;
 
+import database.UsersDB;
 
-/**
- *
- * @author Nahu
- */
+
 @WebServlet(name = "login", urlPatterns = {"/login"})
 public class login extends HttpServlet {
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
-            HttpSession session = request.getSession();
+            Gson json = new Gson();
             
-            /*
+            String email = request.getParameter("email");
+            String password = request.getParameter("password");
             
-            User y Respuestas son clases mias
-        
-            MySql es una clase con metodos estaticos
+            Respuesta<User> respuesta = UsersDB.login(email, password);
             
-            */
-                
+            if(respuesta.isOk()) {
+                respuesta = JWTAuth.createToken(respuesta.getContent());
+            }
+            
+            out.println(json.toJson(respuesta));
             
             }
         }

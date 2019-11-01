@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets.user;
 
 import com.google.gson.Gson;
@@ -13,36 +8,40 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.User;
+import models.User;
+import response.JWTAuth;
 import response.Respuesta;
 
-/**
- *
- * @author Nahu
- */
+
 public class putUserInfo extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            User user = json.fromJson(request.getReader().readLine(), User.class);
+            String token = request.getParameter("token");
             
-            Respuesta<String> respuesta = UsersDB.putUserInfo(user);
+            Respuesta<User> authorized = JWTAuth.verifyToken(token);
             
-            out.println(json.toJson(respuesta));
+            if (authorized.isOk()) {
+                
+                User newInfoUser = json.fromJson(request.getReader().readLine(), User.class);
+                
+                int userId = authorized.getContent().getId();
+                
+                Respuesta<String> respuesta = UsersDB.putUserInfo(newInfoUser,userId);
+                
+                out.println(json.toJson(respuesta));
+                
+                
+            }else {
+                out.println(json.toJson(authorized));
+            }
+            
         }
     }
 

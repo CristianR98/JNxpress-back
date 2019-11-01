@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form id="products">
+            <input type="text" placeholder="term"><br><br>
+            <input type="text" placeholder="user"><br><br>
+            <input type="number" placeholder="category"><br><br>
+            <input type="number" placeholder="condition"><br><br>
+            <button type="submit">Ver productos</button>
+        </form><br><br>
+        
+        <input type="text" id="username">
+        <br>
+        <br>
+        <button id="fav">Añadir a favoritos</button>
+        <br>
+        <br>
+        <button id="comprar">Comprar</button>
+        <br>
+        <br>
+        <button id="edit-interests">Editar intereses</button>
+        <br>
+        <br>
+        <button id="purchases">Compras</button>
+        <button id="sales">Ventas</button>
+        <script>
+            let products = document.getElementById("products");
+            let editInterests = document.getElementById("edit-interests");
+            let fav = document.getElementById("fav")
+            let sales = document.getElementById("purchases")
+            let pur = document.getElementById("sales")
+            
+            let token = localStorage.getItem('token')
+            fetch('login?email=jnxpress@gmail.com&password=quemirasxd')
+                        .then(json => json.json()
+                        .then(resp => {
+                            console.log(resp)
+                            localStorage.setItem('token',resp.content)
+                        })
+                )
+            fetch('verifySession?token=' + token)
+                    .then(json => json.json()
+                    .then(resp => console.log(resp))
+            )
+            
+            sales.onclick = () => {
+                fetch('getSales?token='+token)
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                )
+            }
+            
+            pur.onclick = () => {
+                fetch('getPurchases?token='+token)
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                )
+            }
+            
+            fav.onclick = ( ) => {
+                
+                fetch('postFavorite?id=2&token='+token)
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                )
+                
+            }
+            let i = -2
+            products.oninput = () => {
+                i = -2
+            }
+            products.onsubmit = (e) => {
+                e.preventDefault();
+                i += 2
+                let body = {
+                    term: products[0].value || '',
+                    user: products[1].value || '',
+                    category:products[2].value || 0,
+                    condition: products[3].value || 0,
+                    index: i
+                };
+                
+                let url = `term=${body.term}&user=${body.user}&category=${body.category.id}&term=${body.term}&`
+                
+                fetch('getProductsByFilter?token='+token,{method:'POST',body:JSON.stringify(body)})
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                    );
+                
+                
+            };
+            
+            let username = document.getElementById("username");
+            
+            username.oninput = () => {
+                
+                fetch('busyUsername?username='+username.value)
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                )
+                
+            }
+            
+            
+            let comprar = document.getElementById("comprar")
+            comprar.onclick = ( ) => {
+                console.log('hola')
+                fetch('sale?token='+token+'&productId=4&stock=23')
+                        .then(json => json.text()
+                        .then(resp => console.log(resp))
+                )
+            }
+            
+            editInterests.onclick = () => {
+                let body = [
+                    {id:6},
+                    {id:7},
+                    {id:1}
+                ]
+                
+                body = JSON.stringify(body)
+                
+                fetch('putInterests?token='+token,{method:'POST',body})
+                        .then(json => json.json()
+                        .then(resp => console.log(resp))
+                )
+            }
+            
+        </script>
+    </body>
+</html>

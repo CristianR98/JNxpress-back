@@ -8,7 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.Product;
+import models.Product;
+import models.User;
+import response.JWTAuth;
 import response.Respuesta;
 
 
@@ -17,17 +19,28 @@ public class deleteProduct extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            Product product = json.fromJson(request.getReader().readLine(), Product.class);
+            String token = request.getParameter("token");
             
-            Respuesta respuesta = ProductsDB.deleteProduct(product);
+            Respuesta<User> authorize = JWTAuth.verifyToken(token);
             
-            out.println(json.toJson(respuesta));
-            
+            if (authorize.isOk()) {
+                
+                int idProduct = Integer.parseInt(request.getParameter("productId"));
+                
+                int idUser = authorize.getContent().getId();
+                
+                Respuesta respuesta = ProductsDB.deleteProduct(idProduct, idUser);
+
+                out.println(json.toJson(respuesta));
+                
+            }else {
+                out.println(json.toJson(authorize));
+            }
         }
     }
 

@@ -1,18 +1,22 @@
 package database;
 
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import jnxpress.Filter;
-import jnxpress.Product;
-import jnxpress.User;
+import models.Category;
+import models.Condition;
+import models.Filter;
+import models.Product;
+import models.User;
 import response.Respuesta;
 
 
 public class ProductsDB extends MySql {
     
+    private static String url = "http://localhost:8080/jnxpress/";    
     
-    private static Respuesta existDB(int id) {
+    protected static Respuesta existDB(int id) {
         
         Respuesta respuesta = new Respuesta(200, true, "OK!");
         
@@ -32,12 +36,13 @@ public class ProductsDB extends MySql {
             
         }catch (SQLException e) {    
             
-            respuesta = exeption(e);  
+            respuesta = exception(e);  
 
         }
         
         return respuesta;
     }
+    
     
     private static Respuesta isYourProduct(int idUser, int idProduct) {
         
@@ -60,7 +65,7 @@ public class ProductsDB extends MySql {
             
         }catch(SQLException e) {
             
-                respuesta = exeption(e);
+                respuesta = exception(e);
                 
         }
         
@@ -68,144 +73,120 @@ public class ProductsDB extends MySql {
         
     }
     
-    
-    public static Respuesta<ArrayList<Product>> getProducts(int index) {
+    public static Respuesta<Product> getProduct(int id, int userId) {
         
-        index *= 4;
+        Respuesta<Product> respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        try {
+            
+            String query = "SELECT * FROM `products` WHERE `product-id` = " + id ;
+            
+            rs = stm.executeQuery(query);
+            
+            if (rs.next()) {
+                
+                Product product = new Product();
+                product.setId(id);
+                product.setName(rs.getString("product-name"));
+                product.setDescription(rs.getString("product-description"));
+                product.setPrice(rs.getInt("product-price"));
+                product.setStock(rs.getInt("product-stock"));
+                product.setImage(url + rs.getString("product-image"));
+                product.setImageMin(url + rs.getString("product-image-min"));
+                product.setAppreciation(rs.getInt("product-appreciation"));
+                product.setDate(rs.getString("product-date"));
+                product.setUser(new User());
+                product.getUser().setId(rs.getInt("user-id"));
+                product.setCategory(new Category());
+                product.getCategory().setId(rs.getInt("category-id"));
+                product.setCondition(new Condition());
+                product.getCondition().setId(rs.getInt("condition-id"));
+                
+                
+                if (userId != 0) {
+                    product.isYourProduct = userId==product.getUser().getId();
+                    product.favorite = isFavorite(userId, product.getId());
+                }
+                
+                respuesta.setContent(product);
+                
+            }
+            
+        }catch (SQLException e) {
+            respuesta = exception(e);
+        }
+        
+        return respuesta;
+    }
+    
+    
+    public static Respuesta<ArrayList<Product>> getProductsByFilter(Filter filter,int userId) {
         
         Respuesta<ArrayList<Product>> respuesta = getConnection();
         
-        ArrayList<Product> listProducts = new ArrayList();
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        ArrayList<Product> listProduct = new ArrayList<>();
         
         if (respuesta.isOk()) {
+            String query = "SELECT * FROM `products` WHERE `product-name` LIKE '%" + filter.getTerm() + "%'";
+            
+            int id = UsersDB.existUsername(filter.getUser());
+            
+            if (id > 0) {
+                query += " AND `user-id` = " + id;
+            }
+            if (filter.getCategory() > 0) {
+                query += " AND `category-id` = " + filter.getCategory();
+            }
+            if (filter.getCondition() > 0) {
+                query += " AND `condition-id` = " + filter.getCondition();
+            }
+            
+            query += " ORDER BY `product-id` DESC LIMIT " + filter.getIndex() + ", 6 ";
             
             try {
-                
-                String query = "SELECT * FROM products ORDER BY `product-id` DESC LIMIT " + index + ",4" ;
                 
                 rs = stm.executeQuery(query);
                 
                 while(rs.next()) {
+                    
                     Product product = new Product(
                         rs.getInt("product-id"),
                         rs.getString("product-name"),
                         rs.getString("product-description"),
                         rs.getInt("product-price"),
                         rs.getInt("product-stock"),
-                        rs.getString("product-image"),
+                        url+rs.getString("product-image"),
+                        url+rs.getString("product-image-min"),
                         rs.getString("product-date")
                     );
                     
-                    listProducts.add(product);
+                    product.setAppreciation(rs.getInt("product-appreciation"));
+                    listProduct.add(product);
+                    
                 }
-
-            }
-            
-            catch(SQLException e) {
-                respuesta = exeption(e);
-            }
-            
-        }
+                
+                if (userId != 0) {
+                    
+                    for (int i = 0; i < listProduct.size() ; i++) {
+                    
+                        listProduct.get(i).favorite = isFavorite(userId, listProduct.get(i).getId());
                         
-        respuesta.setContent(listProducts);
-        
-        closeConnection();
-        
-        return respuesta;
-    }
-    
-    
-    public static Respuesta<String> postProduct(Product product){
-        
-        Respuesta<String> respuesta = getConnection();
-       
-        if (respuesta.isOk()) {
-            
-            try {
+                    }
                 
-                String query = "INSERT INTO `products` ("
-                        + "`user-id`" + ","
-                        + "`product-name`" + ","
-                        + "`product-description`" + ","
-                        + "`product-price`" + ","
-                        + "`product-stock`" + ","
-                        + "`product-image`" + ","
-                        + "`category-id`" + ","
-                        + "`condition-id`"
-                        + ") VALUES ("
-                        + product.getUser().getId() + ","
-                        + "'" + product.getName() + "'" + ","
-                        + "'" + product.getDescription() + "'" + ","
-                        + product.getPrice() + ","
-                        + product.getStock() + ","
-                        + "'" + product.getImage() + "'" + ","
-                        + product.getCategory().getId() + ","
-                        + product.getCondition().getId()
-                        + ")";
-                
-                respuesta.setContent(query);
-                stm.executeUpdate(query);
-            }
-            catch(SQLException e) {
-                respuesta = exeption(e);
-            }
-        }
-        
-        closeConnection();
-        
-        return respuesta;
-    }
-    
-    public static Respuesta<ArrayList<Product>> getProductsForFilter(Filter filter) {
-        
-        Respuesta<ArrayList<Product>> respuesta = getConnection();
-        ArrayList<Product> listProduct = new ArrayList<>();
-        
-        if (respuesta.isOk()) {
-            String query = "SELECT * FROM `products` WHERE ";
-            boolean addAnd = false;
-            
-            if (!filter.getTerm().equals("")) {
-                query += "`product-name` LIKE '%" + filter.getTerm() + "%'";
-                addAnd = true;
-            }
-            if (filter.getCategory().getId() > 0) {
-                if (addAnd) {
-                    query += " AND ";
-                }
-                query += "`category-id` = " + filter.getCategory().getId();
-            }
-            if (filter.getCondition().getId() > 0) {
-                if (addAnd) {
-                    query += " AND ";
-                }
-                query += "`condition-id` = " + filter.getCondition().getId();
-            }
-            
-            try {
-                
-                rs = stm.executeQuery(query);
-                
-                while(rs.next()) {
-                    
-                    Product producto = new Product(
-                        rs.getInt("product-id"),
-                        rs.getString("product-name"),
-                        rs.getString("product-description"),
-                        rs.getInt("product-price"),
-                        rs.getInt("product-stock"),
-                        rs.getString("product-image"),
-                        rs.getString("product-date")
-                    );
-                    
-                    listProduct.add(producto);
-                    
                 }
                 
                 respuesta.setContent(listProduct);
                 
             }catch(SQLException e) {
-                respuesta = exeption(e);
+                respuesta = exception(e);
             }
             
             
@@ -216,8 +197,157 @@ public class ProductsDB extends MySql {
         return respuesta;
     }
     
+    public static Respuesta<ArrayList<Product>> getFavorites(int userId) {
+        
+        Respuesta<ArrayList<Product>> respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        ArrayList<Product> listProducts = new ArrayList();
+        
+        try {
+            
+            String query = "SELECT * FROM `products-favorites` WHERE `user-id` = " + userId;
+            
+            rs = stm.executeQuery(query);
+            
+            ArrayList ids = new ArrayList();
+            
+            while(rs.next()) {
+                
+                ids.add(rs.getInt("product-id"));
+                
+            }
+            
+            for (int i = 0; i < ids.size(); i++) {
+                
+                query = "SELECT * FROM `products` WHERE `product-id` = " + ids.get(i);
+                
+                rs = stm.executeQuery(query);
+                
+                rs.next();
+                
+                Product product = new Product();
+                product.setId(rs.getInt("product-id"));
+                product.setName(rs.getString("product-name"));
+                product.setDescription(rs.getString("product-description"));
+                product.setPrice(rs.getInt("product-price"));
+                product.setStock(rs.getInt("product-stock"));
+                product.setImage(url + rs.getString("product-image"));
+                product.setImageMin(url + rs.getString("product-image-min"));
+                product.setAppreciation(rs.getInt("product-appreciation"));
+                product.setDate(rs.getString("product-date"));
+                product.setUser(new User());
+                product.getUser().setId(rs.getInt("user-id"));
+                product.setCategory(new Category());
+                product.getCategory().setId(rs.getInt("category-id"));
+                product.setCondition(new Condition());
+                product.getCondition().setId(rs.getInt("condition-id"));
+                
+                listProducts.add(product);
+                
+            }
+            
+            respuesta.setContent(listProducts);
+            
+            closeConnection();
+            
+        }catch (SQLException e) {
+            respuesta = exception(e);
+        }
+        
+        return respuesta;
+        
+    }
     
-    public static Respuesta<String> putProduct(int idProduct, Product newProduct) {
+    public static Respuesta<String> postProduct(Product product){
+        
+        Respuesta<String> respuesta = getConnection();
+       
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        try {
+                
+               
+            String query = "INSERT INTO `products` ("
+                    + "`user-id`" + ","
+                    + "`product-name`" + ","
+                    + "`product-description`" + ","
+                    + "`product-price`" + ","
+                    + "`product-stock`" + ","
+                    + "`product-image`" + ","
+                    + "`product-image-min`" + ","
+                    + "`category-id`" + ","
+                    + "`condition-id`"
+                    + ") VALUES ("
+                    + product.getUser().getId() + ","
+                    + "'" + product.getName() + "'" + ","
+                    + "'" + product.getDescription() + "'" + ","
+                    + product.getPrice() + ","
+                    + product.getStock() + ","
+                    + "'" + product.getImage() + "'" + ","
+                    + "'" + product.getImageMin() + "'" + ","
+                    + product.getCategory().getId() + ","
+                    + product.getCondition().getId()
+                    + ")";
+                
+            
+            stm.executeUpdate(query);
+            
+        
+        }catch(SQLException e) {
+            respuesta = exception(e);
+        }
+            
+        closeConnection();
+        
+        return respuesta;
+    }
+    
+    public static Respuesta<String> postFavorite(int userId, int productId) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        try {
+            
+            String query = "SELECT * FROM `products-favorites` WHERE `user-id` = " + userId + " AND `product-id` = " + productId;
+            
+            rs = stm.executeQuery(query);
+            
+            if (rs.next()) {
+                
+                query = "DELETE FROM `products-favorites` WHERE `user-id` = " + userId + " AND `product-id` = " + productId;
+                respuesta.setMessage("Removido de favoritos");
+                
+            }else { 
+            
+                query = "INSERT INTO `products-favorites` ("
+                    + "`user-id`, `product-id`"
+                    + ") VALUES ("
+                    + userId + ", " + productId + ")";
+                respuesta.setMessage("Añadido de favoritos");
+
+            }
+            
+            stm.executeUpdate(query);
+            
+        }catch (SQLException e) {
+            respuesta = exception(e);
+        }
+         
+        return respuesta;
+        
+    }
+    
+    public static Respuesta<String> putProduct(Product newProduct) {
         
         Respuesta<String> respuesta = getConnection();
         
@@ -247,13 +377,15 @@ public class ProductsDB extends MySql {
         }
         
         try {
-            
+            System.out.println(newProduct.getImage());
+            System.out.println(newProduct.getImageMin());
             String query = "UPDATE `products` SET "
                     + "`product-name` = '" + newProduct.getName() + "',"
                     + "`product-description` = '" + newProduct.getDescription()+ "',"
                     + "`product-price` = " + newProduct.getPrice() + ","
                     + "`product-stock` = " + newProduct.getStock() + ","
                     + "`product-image` = '" + newProduct.getImage() + "',"
+                    + "`product-image-min` = '" + newProduct.getImageMin() + "',"
                     + "`category-id` = " + newProduct.getCategory().getId() + ","
                     + "`condition-id` = " + newProduct.getCondition().getId()
                     + " WHERE `product-id` = " + newProduct.getId();
@@ -274,7 +406,7 @@ public class ProductsDB extends MySql {
         
     }
     
-    public static Respuesta deleteProduct( Product product ) {
+    public static Respuesta deleteProduct( int idProduct, int idUser ) {
         
         Respuesta respuesta = getConnection();
         
@@ -283,7 +415,7 @@ public class ProductsDB extends MySql {
             return respuesta;
         }
         
-        respuesta = checkUpdate(product.getUser().getId(), product.getId());
+        respuesta = checkUpdate(idUser, idProduct);
         
         if(!respuesta.isOk()) {
             closeConnection();
@@ -292,16 +424,15 @@ public class ProductsDB extends MySql {
         
         try {
             
-            String query = "DELETE FROM `products` WHERE `product-id` = " + product.getId();
+            String query = "DELETE FROM `products` WHERE `product-id` = " + idProduct;
 
             stm.executeUpdate(query);
             
         }catch (SQLException e) {
             
-            respuesta = exeption(e);
+            respuesta = exception(e);
             
         }
-        
         
         return respuesta;
         
@@ -330,6 +461,29 @@ public class ProductsDB extends MySql {
         }
         
         return respuesta;
+        
+    }
+    
+    private static boolean isFavorite(int userId, int productId) {
+        
+        try {
+            System.out.println(userId + " , " + productId);
+            String query = "SELECT * FROM `products-favorites` WHERE `user-id` = " + userId + " AND `product-id` = " + productId;
+            
+            ResultSet favorite = stm.executeQuery(query);
+            
+            if (favorite.next()) {
+                System.out.println(favorite.getString("product-id"));
+                return true;
+            }
+            else {
+                return false;
+            }
+            
+        }catch (SQLException e) {
+            System.out.println("favorite"+e.getLocalizedMessage());
+            return false;
+        }
         
     }
     

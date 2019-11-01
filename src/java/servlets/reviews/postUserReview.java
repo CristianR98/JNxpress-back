@@ -1,7 +1,6 @@
 package servlets.reviews;
 
 import com.google.gson.Gson;
-import database.MySql;
 import database.ReviewsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,58 +8,45 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.Review;
-import jnxpress.User;
+import models.Review;
+import models.User;
+import response.JWTAuth;
 import response.Respuesta;
 
-/**
- *
- * @author Nahu
- */
+
 public class postUserReview extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            
             Gson json = new Gson();
             
+            String token = request.getParameter("token");
             
-            Review<User> review = json.fromJson(request.getReader().readLine(), Review.class );
+            Respuesta<User> authorized = JWTAuth.verifyToken(token);
             
-            String userString = json.toJson(review.getTarget());
+            if (authorized.isOk()) {
+                
+                Review<User> review = json.fromJson(request.getReader().readLine(), Review.class);
 
-            User user = json.fromJson(userString, User.class);
-            
-            review.setTarget(user);
-            
-            out.println(json.toJson(review));
-            
-            Respuesta respuesta = review.getUser().existDB();
-            
-            if (respuesta.isOk()) {
+                String userString = json.toJson(review.getTarget());
+
+                User user = json.fromJson(userString, User.class);
+
+                review.setTarget(user);
                 
-                respuesta = review.getTarget().existDB();
+                review.setUser(authorized.getContent());
+
+                Respuesta respuesta = ReviewsDB.postUserReview(review, authorized.getContent().getId());
                 
-                if (respuesta.isOk()) {
-                    
-                    respuesta = ReviewsDB.postUserReview(review);
-                    
-                }
+                out.print(json.toJson(respuesta));
                 
-           }
-            
-            out.println(json.toJson(respuesta));
-            
+            }else {
+                out.println(json.toJson(authorized));
+            }
             
             
         }

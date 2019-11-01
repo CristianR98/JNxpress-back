@@ -8,8 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.Product;
-import jnxpress.Review;
+import models.Product;
+import models.Review;
+import models.User;
+import response.JWTAuth;
 import response.Respuesta;
 
 
@@ -22,17 +24,31 @@ public class postProductReview extends HttpServlet {
             
             Gson json = new Gson();
             
-            Review<Product> review = json.fromJson(request.getReader().readLine(), Review.class);
+            String token = request.getParameter("token");
             
-            String userString = json.toJson(review.getTarget());
+            Respuesta<User> authorized = JWTAuth.verifyToken(token);
+            
+            if (authorized.isOk()) {
+                
+                Review<Product> review = json.fromJson(request.getReader().readLine(), Review.class);
 
-            Product product = json.fromJson(userString, Product.class);
+                String userString = json.toJson(review.getTarget());
+
+                Product product = json.fromJson(userString, Product.class);
+
+                review.setTarget(product);
+                
+                review.setUser(authorized.getContent());
+                
+                Respuesta respuesta = ReviewsDB.postProductReview(review, authorized.getContent().getId());
+                
+                out.print(json.toJson(respuesta));
+                
+            }else {
+                out.println(json.toJson(authorized));
+            }
             
-            review.setTarget(product);
-            
-            Respuesta respuesta = ReviewsDB.postProductReview(review);
                     
-            out.println(json.toJson(respuesta));
             
         }
     }

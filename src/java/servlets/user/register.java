@@ -1,13 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets.user;
 
-import com.google.gson.Gson;
-import database.MySql;
-import database.UsersDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -15,33 +7,27 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.User;
+
+import com.google.gson.Gson;
+
+import models.User;
+
 import response.Respuesta;
 
-/**
- *
- * @author Nahu
- */
+import database.UsersDB;
+
+
 @WebServlet(name = "register", urlPatterns = {"/register"})
 public class register extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             Gson json = new Gson();
             
             User user = json.fromJson(request.getReader().readLine(), User.class);
-            
             Respuesta respuesta = user.validate();
             
             if (respuesta.isOk()) {

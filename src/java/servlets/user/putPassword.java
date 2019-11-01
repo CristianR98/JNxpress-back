@@ -8,7 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.User;
+import models.User;
+import response.JWTAuth;
 import response.Respuesta;
 
 
@@ -16,24 +17,36 @@ public class putPassword extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("json/html;charset=UTF-8");
+        response.setContentType("text/json;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             
             Gson json = new Gson();
             
-            int idUser = Integer.parseInt(request.getParameter("id"));
-            String actualPassword = request.getParameter("actualPassword");
-            String newPassword = request.getParameter("newPassword");
+            String token = request.getParameter("token");
             
-            Respuesta respuesta = User.validatePassword(newPassword);
+            Respuesta<User> authorized = JWTAuth.verifyToken(token);
             
-            if (respuesta.isOk()) {
-            
-                respuesta = UsersDB.putPassword(idUser, actualPassword, newPassword);
+            if (authorized.isOk()) {
                 
+                String actualPassword = request.getParameter("actualPassword");
+                String newPassword = request.getParameter("newPassword");
+                
+                int userId = authorized.getContent().getId();
+
+                Respuesta respuesta = User.validatePassword(newPassword);
+
+                if (respuesta.isOk()) {
+
+                    respuesta = UsersDB.putPassword(userId, actualPassword, newPassword);
+
+                }
+                
+                out.println(json.toJson(respuesta));
+                
+            }else {
+                out.println(json.toJson(authorized));
             }
             
-            out.println(json.toJson(respuesta));
             
         }
     }

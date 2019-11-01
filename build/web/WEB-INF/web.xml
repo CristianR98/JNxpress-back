@@ -5,16 +5,12 @@
         <servlet-class>servlets.products.getProducts</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>files</servlet-name>
-        <servlet-class>servlets.products.files</servlet-class>
+        <servlet-name>postProduct</servlet-name>
+        <servlet-class>servlets.products.postProduct</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>publicProduct</servlet-name>
-        <servlet-class>servlets.products.publicProduct</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>getProductsForFilter</servlet-name>
-        <servlet-class>servlets.products.getProductsForFilter</servlet-class>
+        <servlet-name>getProductsByFilter</servlet-name>
+        <servlet-class>servlets.products.getProductsByFilter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>postUserReview</servlet-name>
@@ -49,24 +45,72 @@
         <servlet-class>servlets.products.deleteProduct</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>arrays</servlet-name>
-        <servlet-class>arrays</servlet-class>
+        <servlet-name>getCategories</servlet-name>
+        <servlet-class>servlets.categories.getCategories</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>postFavorite</servlet-name>
+        <servlet-class>servlets.products.postFavorite</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getInterests</servlet-name>
+        <servlet-class>servlets.categories.getInterests</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>busyUsername</servlet-name>
+        <servlet-class>servlets.user.busyUsername</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>sale</servlet-name>
+        <servlet-class>servlets.sales.sale</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>putInterests</servlet-name>
+        <servlet-class>servlets.user.putInterests</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getPurchases</servlet-name>
+        <servlet-class>servlets.sales.getPurchases</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getSales</servlet-name>
+        <servlet-class>servlets.sales.getSales</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getProduct</servlet-name>
+        <servlet-class>servlets.products.getProduct</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getUserById</servlet-name>
+        <servlet-class>servlets.user.getUserById</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getUserByUsername</servlet-name>
+        <servlet-class>servlets.user.getUserByUsername</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getUsersByUsername</servlet-name>
+        <servlet-class>servlets.user.getUsersByUsername</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>getFavorites</servlet-name>
+        <servlet-class>servlets.products.getFavorites</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>addBalance</servlet-name>
+        <servlet-class>servlets.user.addBalance</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>getProducts</servlet-name>
         <url-pattern>/getProducts</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>files</servlet-name>
-        <url-pattern>/files</url-pattern>
+        <servlet-name>postProduct</servlet-name>
+        <url-pattern>/postProduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>publicProduct</servlet-name>
-        <url-pattern>/publicProduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>getProductsForFilter</servlet-name>
-        <url-pattern>/getProductsForFilter</url-pattern>
+        <servlet-name>getProductsByFilter</servlet-name>
+        <url-pattern>/getProductsByFilter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>postUserReview</servlet-name>
@@ -101,8 +145,60 @@
         <url-pattern>/deleteProduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>arrays</servlet-name>
-        <url-pattern>/arrays</url-pattern>
+        <servlet-name>getCategories</servlet-name>
+        <url-pattern>/getCategories</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>postFavorite</servlet-name>
+        <url-pattern>/postFavorite</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getInterests</servlet-name>
+        <url-pattern>/getInterests</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>busyUsername</servlet-name>
+        <url-pattern>/busyUsername</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sale</servlet-name>
+        <url-pattern>/sale</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>putInterests</servlet-name>
+        <url-pattern>/putInterests</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getPurchases</servlet-name>
+        <url-pattern>/getPurchases</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getSales</servlet-name>
+        <url-pattern>/getSales</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getProduct</servlet-name>
+        <url-pattern>/getProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getUserById</servlet-name>
+        <url-pattern>/getUserById</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getUserByUsername</servlet-name>
+        <url-pattern>/getUserByUsername</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getUsersByUsername</servlet-name>
+        <url-pattern>/getUsersByUsername</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>getFavorites</servlet-name>
+        <url-pattern>/getFavorites</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>addBalance</servlet-name>
+        <url-pattern>/addBalance</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
@@ -146,4 +242,9 @@
         <artifactId>gson</artifactId>
         <version>2.8.6</version>
     </dependency>
+    <context-param>
+        <description>Location to store uploaded file</description>
+        <param-name>file-upload</param-name>
+        <param-value>C:\Users\Nahu\Desktop\apache-tomcat-8.5.46\work\jnxpress</param-value>
+    </context-param>
 </web-app>

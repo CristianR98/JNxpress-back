@@ -5,13 +5,17 @@ import database.ProductsDB;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import jnxpress.Product;
+import javax.servlet.http.Part;
+import models.Product;
+import models.User;
+import response.JWTAuth;
 import response.Respuesta;
 
-
+@MultipartConfig
 public class putProduct extends HttpServlet {
 
     
@@ -22,13 +26,35 @@ public class putProduct extends HttpServlet {
             
             Gson json = new Gson();
             
-            Product newProduct = json.fromJson(request.getReader().readLine(), Product.class);
+            String token = request.getParameter("token");
             
-            int idProduct = Integer.parseInt(request.getParameter("idProduct"));
+            Respuesta<User> authorize = JWTAuth.verifyToken(token);
             
-            Respuesta<String> respuesta = ProductsDB.putProduct(idProduct, newProduct);
-            
-            out.println(json.toJson(respuesta));
+            if (authorize.isOk()) {
+                
+                Product newProduct = json.fromJson(request.getParameter("product"), Product.class);
+
+                Part imagePart = request.getPart("image");
+                Part imageMinPart = request.getPart("image-min");
+                
+                newProduct.setUser(authorize.getContent());
+
+                Respuesta respuesta = newProduct.getAndMoveImage(imagePart, imageMinPart);
+
+                if (respuesta.isOk()) {
+                    
+                    respuesta = ProductsDB.putProduct(newProduct);
+                    
+                    out.println(json.toJson(respuesta));
+                    
+                }else {
+                    out.println(json.toJson(respuesta));
+                }
+                
+                
+            }else {
+                out.println(json.toJson(authorize));
+            }
             
             
         }

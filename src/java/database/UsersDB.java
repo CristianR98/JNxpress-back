@@ -1,20 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package database;
 
 import static database.MySql.getConnection;
 import java.sql.SQLException;
-import jnxpress.Category;
-import jnxpress.User;
+import java.util.ArrayList;
+import models.Category;
+import models.User;
 import response.Respuesta;
 
-/**
- *
- * @author Nahu
- */
 public class UsersDB extends MySql{
     
     protected static Respuesta existDB(int id) {
@@ -34,40 +26,94 @@ public class UsersDB extends MySql{
             
             
         }catch (SQLException e) {
-            respuesta = exeption(e);
+            respuesta = exception(e);
         }
         
         return respuesta;
         
     }
     
-    private static Respuesta busyUsername(User user) {
-        
-        Respuesta respuesta = new Respuesta(200, true, "OK!");
+    protected static int existUsername(String username) {
         
         try {
             
-            String query = "SELECT * FROM `users` WHERE "
-                    + "`user-username` = '" + user.getUsername() + "' "
-                    + "AND NOT `user-id` = " + user.getId();
+            String query = "SELECT * FROM `users` WHERE `user-username` = '" + username + "'";
+            
+            rs = stm.executeQuery(query);
+            
+            if (rs.next()) {
+                return rs.getInt("user-id");
+            }else {
+                return 0;
+            }
+            
+        }catch (SQLException e) {
+            return 0;
+        }
+        
+    }
+    
+    public static Respuesta<String> busyUsername(String username) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        respuesta.setOk((existUsername(username) > 0));
+        
+        if (respuesta.isOk()) {
+            return new Respuesta(403, false, "Nombre de usuario ya ocupado");
+        }else {
+            return new Respuesta(200, true, "OK!");
+        }
+        
+    }
+    
+    public static Respuesta login(String email, String password) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        try {
+        
+            String query = "SELECT * FROM `users` WHERE `user-email` = '" + email + "' AND `user-password` = '" + password + "'" ;
             
             rs = stm.executeQuery(query);
             
             if (rs.next()) {
                 
-                respuesta = new Respuesta(403, false, "Ya existe un usuario con ese nombre.");
+                respuesta = new Respuesta(200, true, "OK!");
+                User user = new User();
+                user.setId(rs.getInt("user-id"));
+                user.setUsername(rs.getString("user-username"));
+                user.setDescription(rs.getString("user-description"));
+                user.setEmail(rs.getString("user-email"));
+                user.setBalance(rs.getFloat("user-balance"));
+                user.setSales(rs.getInt("user-sales"));
+                user.setPurchases(rs.getInt("user-purchases"));
+                user.setAppreciation(rs.getInt("user-appreciation"));
                 
+                respuesta.setContent(user);
+                
+            }else {
+                respuesta = new Respuesta(403, false, "Email o password incorrectos!");
             }
             
-        }catch (SQLException e) {
-            respuesta = exeption(e);
+        }catch(SQLException e) {
+            respuesta = exception(e);
         }
         
         return respuesta;
         
     }
     
-    public static Respuesta getUserForId(int id) {
+    
+    public static Respuesta<User> getUserById(int id) {
         
         Respuesta respuesta = getConnection();
     
@@ -81,15 +127,22 @@ public class UsersDB extends MySql{
                 
                 if (rs.next()) {
                     
-                    respuesta.setStatus(200);
-                    respuesta.setOk(true);
-                    respuesta.setMessage("OK!");
+                    User user = new User();
+                    
+                    user.setId(rs.getInt("user-id"));
+                    user.setUsername(rs.getString("user-username"));
+                    user.setDescription(rs.getString("user-description"));
+                    user.setEmail(rs.getString("user-email"));
+                    user.setBalance(rs.getFloat("user-balance"));
+                    user.setSales(rs.getInt("user-sales"));
+                    user.setPurchases(rs.getInt("user-purchases"));
+                    user.setAppreciation(rs.getInt("user-appreciation"));
+
+                    respuesta.setContent(user);
                     
                 }else{
                     
-                    respuesta.setStatus(403);
-                    respuesta.setOk(false);
-                    respuesta.setMessage("Usuario no encontrado!");
+                    respuesta = new Respuesta(404, false, "Usuario no encontrado!");
                 
                 }
                 
@@ -108,9 +161,9 @@ public class UsersDB extends MySql{
         
     }
     
-    public static Respuesta<String> getUserForUsername(String username) {
+    public static Respuesta<User> getUserByUsername(String username) {
         
-        Respuesta<String> respuesta = getConnection();
+        Respuesta<User> respuesta = getConnection();
         
         if (respuesta.isOk()) {
             
@@ -122,14 +175,11 @@ public class UsersDB extends MySql{
                 
                 if (rs.next()) {
                     
-                    respuesta.setStatus(403);
-                    respuesta.setMessage("Nombre de usuario ya existente!");
-                    respuesta.setOk(false);
+                    respuesta = new Respuesta(200, true, "OK!");
                     
                 }else {
                     
-                    respuesta.setStatus(200);
-                    respuesta.setMessage("OK!");
+                    respuesta = new Respuesta(404, false, "Usuario no encontrado!");
                     
                 }
                 
@@ -148,10 +198,63 @@ public class UsersDB extends MySql{
         
     }
     
-    public static Respuesta<String> getUserForEmail(String email) {
+    public static Respuesta<ArrayList<User>> getUsersByUsername(String username) {
+        
+        Respuesta<ArrayList<User>> respuesta = getConnection();
+        
+        ArrayList<User> listUsers = new ArrayList();
+        
+        if (respuesta.isOk()) {
+            
+            try {
+                
+                String query = "SELECT * FROM users WHERE `user-username` LIKE '%" + username + "%' LIMIT 0,5";
+                
+                rs = stm.executeQuery(query);
+                
+                while(rs.next()) {
+                    
+                    User user = new User();
+                    user.setUsername(rs.getString("user-username"));
+                    respuesta = new Respuesta(200, true, "OK!");
+                    listUsers.add(user);
+                    
+                }
+                
+                respuesta.setContent(listUsers);
+                
+                closeConnection();
+                
+            }
+            catch(SQLException e) {
+                    respuesta.setStatus(404);
+                    respuesta.setMessage(e.getMessage());
+                    respuesta.setOk(false);
+            }
+            
+        }
+
+        return respuesta;
+        
+    }
+    
+    public static Respuesta<String> validateUsername(String username) {
+        
+        Respuesta respuesta = getUserByUsername(username);
+        
+        if (respuesta.isOk()) {
+            respuesta = new Respuesta(403, false, "Nombre de usuario ya existente");
+        }else {
+            respuesta = new Respuesta(200, true, "OK!");
+        }
+     
+        return respuesta;
+        
+    }
+    
+    public static Respuesta<String> getUserByEmail(String email) {
                    
         Respuesta respuesta = new Respuesta(200, true, "OK!");
-        
         try {
               
             String query = "SELECT * FROM users WHERE `user-email` = '" + email + "'";
@@ -165,57 +268,17 @@ public class UsersDB extends MySql{
             }
                 
         }catch(SQLException e) {
-                respuesta = exeption(e);
+                respuesta = exception(e);
         }
         
             
         return respuesta;
             
     }
-
-        
     
     
-    public static Respuesta<User> getUser(int id) {
-        
-        Respuesta<User> respuesta = getConnection();
-        
-        User usuario;
-        
-        if (respuesta.isOk()) {
-            
-            try {
-                String query = "SELECT * FROM users WHERE `user-id` = '" + id+ "'";
-                
-                rs = stm.executeQuery(query);
-                
-                rs.next();
-                
-                usuario = new User(
-                        id,
-                        rs.getString("user-username"),
-                        rs.getString("user-email"),
-                        rs.getFloat("user-balance"),
-                        rs.getInt("user-sales"),
-                        rs.getInt("user-purchase"),
-                        rs.getInt("user-appreciation")
-                );
-                
-                respuesta.setContent(usuario);
-                
-            }  
-            catch(SQLException e) {
-                respuesta.setStatus(500);
-                respuesta.setMessage(e.getMessage());
-            }
-            
-        }
-        
-        return respuesta;
-    }
     
     public static Respuesta postUser(User user) {
-        
         Respuesta respuesta = getConnection();
         
         if(!respuesta.isOk()) {
@@ -223,12 +286,26 @@ public class UsersDB extends MySql{
             return respuesta;
         }
         
+        respuesta = getUserByEmail(user.getEmail());
         
-        respuesta = getUserForEmail(user.getEmail());
+        System.out.println(respuesta.getMessage());
         
-        if (respuesta.isOk()) {
+        if(!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        
+        respuesta = busyUsername(user.getUsername());
+        
+        if(!respuesta.isOk()) {
+            closeConnection();
+            return respuesta;
+        }
+        
             
             try {
+                
+                //rs.close();
                 String query = "INSERT INTO `users` ("
                         + "`user-username`,"
                         + "`user-description`,"
@@ -254,39 +331,31 @@ public class UsersDB extends MySql{
                 int id = rs.getInt("user-id");
                 
                 for (int i = 0; i < user.getInterests().size(); i++) {
-                    
+                    System.out.println(user.getInterests().get(i).getId());
                     Category category = user.getInterests().get(i);
                     
-                    query = "INSERT INTO `interests` ("
-                            + "`category-id`"
-                            + "`user-id`"
-                            + ") VALUES ("
-                            + category.getId() + ", "
-                            + user.getId() + ")";
-                    
-                    query = "INSERT INTO `interests` (`category-id`, `user-id`) VALUES (" + category.getId() + ", " + id + ")";
-                    
+                    query = "INSERT INTO `interests` (`category-id`, `user-id`) VALUES (" + category.getId() + ", " + id +")";
+
                     stm.executeUpdate(query);
-                    respuesta.setContent(i);
                 }
                 
                 
             }catch(SQLException e) {
                 
-                respuesta.setStatus(500);
-                respuesta.setOk(false);
-                respuesta.setMessage(e.getMessage());
+                respuesta = exception(e);
                 
             }
             
             
-        }
+        
         
         return respuesta;
         
     }
     
-    public static Respuesta putUserInfo(User user) {
+    
+    
+    public static Respuesta putUserInfo(User user, int userId) {
         
         Respuesta respuesta = getConnection();
         
@@ -295,32 +364,31 @@ public class UsersDB extends MySql{
             return respuesta;
         }
         
-        respuesta = existDB(user.getId());
+        respuesta = existDB(userId);
         
         if (!respuesta.isOk()) {
             closeConnection();
             return respuesta;
         }
         
-        respuesta = busyUsername(user);
+        int valid = existUsername(user.getUsername());
         
-        if (!respuesta.isOk()) {
+        if (valid <= 0) {
             closeConnection();
-            return respuesta;
+            return new Respuesta(403, false, "Usuario ya ocupado!");
         }
-        
         
         try {
             
             String query = "UPDATE `users` SET "
                     + "`user-username` = '" + user.getUsername() + "',"
                     + "`user-description` = '" + user.getDescription() + "' "
-                    + "WHERE `user-id` = " + user.getId();
+                    + "WHERE `user-id` = " + userId;
             
             stm.executeUpdate(query);
             
         }catch (SQLException e) {
-            respuesta = exeption(e);
+            respuesta = exception(e);
         }
         
         closeConnection();
@@ -328,6 +396,8 @@ public class UsersDB extends MySql{
         return respuesta;
         
     }
+    
+    
     
     public static Respuesta putPassword(int idUser, String actualPassword, String newPassword) {
         
@@ -364,7 +434,7 @@ public class UsersDB extends MySql{
             stm.executeUpdate(query);
             
         }catch (SQLException e) {
-            respuesta = exeption(e);
+            respuesta = exception(e);
         }
         
         closeConnection();
@@ -372,5 +442,42 @@ public class UsersDB extends MySql{
         return respuesta;
         
     }
+    
+    public static Respuesta<String> addBalance(int addBalance, int userId) {
+        
+        Respuesta respuesta = getConnection();
+        
+        if (!respuesta.isOk()) {
+            return respuesta;
+        }
+        
+        try {
+            
+            String query = "SELECT * FROM `users` WHERE `user-id` = " + userId;
+            
+            rs = stm.executeQuery(query);
+            
+            int balance;
+            
+            if (rs.next()) {
+                balance = rs.getInt("user-balance");
+            }else {
+                respuesta = new Respuesta(403, false, "Hubo un error!");
+                return respuesta;
+            }
+            
+            query = "UPDATE `users` SET `user-balance` = " + (balance + addBalance) + " WHERE `user-id` = " + userId;
+            
+            stm.executeUpdate(query);
+            
+            
+        }catch(SQLException e) {
+            respuesta = exception(e);
+        }
+        
+        return respuesta;
+        
+    }
+    
     
 }

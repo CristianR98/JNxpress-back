@@ -15,7 +15,7 @@ public class MySql {
     protected static String userDB = "root";
     protected static String password = "";
     protected static String database = "jnxpress";
-    protected static String url = "jdbc:mysql://localhost:3307/" + database + "?user=" + userDB + "&password=" + password;
+    protected static String url = "jdbc:mysql://localhost:3306/" + database + "?user=" + userDB + "&password=" + password;
     
     protected static Respuesta getConnection() {
         
@@ -35,7 +35,9 @@ public class MySql {
     protected static void closeConnection() {
         try {
             stm.close();
-            rs.close();
+            if (rs != null) {
+                rs.close();
+            }
             con.close();
         }
         catch(SQLException e) {
@@ -43,7 +45,7 @@ public class MySql {
         }
     }
     
-    protected static Respuesta exeption( Exception e) {
+    protected static Respuesta exception( Exception e) {
         return new Respuesta(500, false, e.getMessage() );
     }
     

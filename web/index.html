@@ -12,10 +12,6 @@ and open the template in the editor.
     </head>
     <body>
         <div>TODO write content</div>
-        
-        <input type="file" id="file"><br><br>
-        
-        <button id="publicar">Publicar producto</button><br><br>
             
         <button id="ver-productos">Ver productos</button><br><br>
             
@@ -33,8 +29,6 @@ and open the template in the editor.
         
         <button id="getProductReview" >Ver review a producto</button><br><br>
         
-        <button id="editProduct" >Editar producto</button><br><br>
-        
         <button id="editInfo" >Editar informacion</button><br><br>
         
         <button id="editPassword" >Editar password</button><br><br>
@@ -42,6 +36,17 @@ and open the template in the editor.
         <button id="deleteProduct" >Eliminar Producto</button><br><br>
         
         <button id="arrays" >Array</button><br><br>
+        
+        <button id="jwt">Obtener JWT</button>
+        
+        <input type="file" id="file"><br><br>
+        
+        <canvas width="270" height="270" id="canvas"></canvas><br><br>
+        
+        <button id="publicar">Publicar producto</button><br><br>
+        
+        <button id="editProduct" >Editar producto</button><br><br>
+        
         
         <script>
             let file = document.getElementById("file")
@@ -58,42 +63,32 @@ and open the template in the editor.
             let editPassword = document.getElementById("editPassword")
             let deleteProduct = document.getElementById("deleteProduct")
             let arrays = document.getElementById("arrays")
+            let jwt = document.getElementById("jwt")
+            let canvas = document.getElementById("canvas")
+            let ctx = canvas.getContext("2d")
             
-            publicar.onclick = () => {
-                let body = {
-                    name: 'Topper Street Nova',
-                    description: `Topper Street NovaTopper Street NovaTopper Street Nova
-                                  Topper Street NovaTopper Street NovaTopper Street Nova
-                                  Topper Street NovaTopper Street NovaTopper Street Nova
-                                  Topper Street NovaTopper Street NovaTopper Street Nova`,
-                    price: 1245.50,
-                    stock: 43,
-                    image: 'noseeeep',
-                    date: new Date(),
-                        category: {
-                        id: 1,
-                    },
-                    condition: {
-                        id: 2
-                    },
-                    user: {
-                        id: 1,
-                        username: 'JNxpress',
-                        description: 'Fundador de JNxpress',
-                        email: 'jnxpress@jnx.com',
-                        password: 'qwerty123',
-                        balance: 50000,
-                        sales: 45,
-                        purchase: 62,
-                        appreciation: 5
-                    }
-                }
-                body = JSON.stringify(body)
-                fetch('publicProduct',{method:'POST',body})
+            let token = localStorage.getItem('token')
+            fetch('verifySession?token=' + token)
+                    .then(json => json.text()
+                    .then(resp => console.log(resp))
+            )
+            
+            fetch('getCategories')
                     .then(json => json.json()
                     .then(resp => console.log(resp))
-                    )
+            )
+            
+            jwt.onclick = () => {
+                fetch('login?email=jnxpress@gmail.com&password=quemirasxd')
+                        .then(json => json.json()
+                        .then(resp => {
+                            console.log(resp)
+                            localStorage.setItem('token',resp.content)
+                        })
+                )
             }
+            
+            
             
             
             let index = 0;
@@ -109,7 +104,11 @@ and open the template in the editor.
             
             filtros.onclick = () => {
                 
-                fetch('getProductsForFilter?term=zl&category=0&condition=0&user=',)
+                let body = {
+                    term:'pin'
+                }
+                
+                fetch('getProductsByFilter?term=zl&category=0&condition=0&user=',)
                     .then(json => json.json()
                         .then(resp => {
                             console.log(resp)
@@ -148,7 +147,6 @@ and open the template in the editor.
             postUserReview.onclick = () => {
                 
                 let body = {
-                    user: {id:6},
                     target: {id:3},
                     content: 'Muy buen vendedor',
                     appreciation: 4
@@ -156,7 +154,7 @@ and open the template in the editor.
                 
                 body = JSON.stringify(body)
                 
-                fetch('postUserReview',{method:'POST',body})
+                fetch('postUserReview?token='+token,{method:'POST',body})
                         .then(json => json.json()
                         .then(resp => console.log(resp))
                     )
@@ -167,7 +165,6 @@ and open the template in the editor.
             postProductReview.onclick = () => {
                 
                 let body = {
-                    user: {id:6},
                     target: {id:3},
                     content: 'Muy buen producto',
                     appreciation: 4
@@ -175,7 +172,7 @@ and open the template in the editor.
                 
                 body = JSON.stringify(body)
                 
-                fetch('postProductReview',{method:'POST',body})
+                fetch('postProductReview?token='+token,{method:'POST',body})
                         .then(json => json.json()
                         .then(resp => console.log(resp))
                     )
@@ -203,35 +200,7 @@ and open the template in the editor.
                 
             }
             
-            
-            editProduct.onclick = () => {
-                
-                let body = {
-                    user: {
-                        id:2
-                    },
-                    id:2,
-                    name: 'Topper Street Nova - Rojas',
-                    description: 'Otra descripcion',
-                    price: 588,
-                    stock: 24,
-                    image: 'url',
-                    category: {
-                        id:5
-                    },
-                    condition: {
-                        id: 1
-                    }
-                }
-                
-                body = JSON.stringify(body)
-                
-                fetch('putProduct?idProduct=1',{method:'POST',body})
-                        .then(json => json.text()
-                        .then(resp => console.log(resp))
-                )
-                
-            }
+           
             
             editInfo.onclick = () => {
                 let body = {
@@ -262,14 +231,7 @@ and open the template in the editor.
             
             deleteProduct.onclick = () => {
                 
-                let body = {
-                    id: 1,
-                    user: {id:1}
-                }
-                
-                body = JSON.stringify(body)
-                
-                fetch('deleteProduct',{method:'POST',body})
+                fetch('deleteProduct?token='+token+'productId=3')
                         .then(json => json.json()
                         .then(resp => console.log(resp))
                 )   
@@ -285,28 +247,112 @@ and open the template in the editor.
             }
             
             
-//            prueba.onclick = () => {
-//                
-//                fetch('probar?nombre=ads&category=')
-//                    .then(json => json.text()
-//                        .then(resp => {
-//                            console.log(resp)
-//                        })  
-//                    )
-//                
-//            }
-            
-            /*file.onchange = () => {
-                let formData = new FormData()
-                formData.append('img',file.files[0]) 
-                formData.append('hola',"Holaaaa") 
-                let ajax = new XMLHttpRequest()
-                ajax.open('POST','files',true)
-                ajax.onload = () => {
-                    console.log(ajax.responseText)
+            editProduct.onclick = () => {
+                canvas.toBlob((blob)=> {
+                        let archivo = new File([blob],'Archivo.jpg',{type:blob.type})
+                        console.log(blob)
+                        let data = new FormData()
+                        data.append('image',file.files[0])
+                        data.append('image-min', archivo)
+                        let body = {
+                            id:11,
+                            name: 'Topper Street Nova - Rojas',
+                            description: 'Otra descripcion',
+                            price: 588,
+                            stock: 24,
+                            image: 'url',
+                            category: {
+                                id:5
+                            },
+                            condition: {
+                                id: 1
+                            }
+                        }
+                        body = JSON.stringify(body)
+                        data.append('product',body)
+
+                        fetch('putProduct?token='+token,{method:'POST',body:data})
+                        .then(json => json.text()
+                        .then(resp => console.log(resp))
+                )
+                        
+                        
+                    })
                 }
-                ajax.send(formData)
-            }*/
+                        
+                        
+            
+            publicar.onclick = () => {
+                canvas.toBlob((blob)=> {
+                        let archivo = new File([blob],'Archivo.jpg',{type:blob.type})
+                        console.log(blob)
+                        let data = new FormData()
+                        data.append('image',file.files[0])
+                        data.append('image-min', archivo)
+                        let body = {
+                            name: 'Topper Street Nova',
+                            description: `Topper Street NovaTopper Street NovaTopper Street Nova
+                                          Topper Street NovaTopper Street NovaTopper Street Nova
+                                          Topper Street NovaTopper Street NovaTopper Street Nova
+                                          Topper Street NovaTopper Street NovaTopper Street Nova`,
+                            price: 1245.50,
+                            stock: 43,
+                            image: 'noseeeep',
+                            date: new Date(),
+                                category: {
+                                id: 1,
+                            },
+                            condition: {
+                                id: 2
+                            },
+                            user: {
+                                id: 1,
+                                username: 'JNxpress',
+                                description: 'Fundador de JNxpress',
+                                email: 'jnxpress@jnx.com',
+                                password: 'qwerty123',
+                                balance: 50000,
+                                sales: 45,
+                                purchase: 62,
+                                appreciation: 5
+                            }
+                        }
+                        
+                        body = JSON.stringify(body)
+                        data.append('product',body)
+
+                        fetch('postProduct?token=' + localStorage.getItem('token'),{method:'POST',body:data})
+                                .then(json => json.text()
+                                .then(resp => console.log(resp))
+                        )
+                    })
+                
+                body = JSON.stringify(body)
+                fetch('publicProduct',{method:'POST',body})
+                    .then(json => json.json()
+                    .then(resp => console.log(resp))
+                    )
+            }
+            
+            file.onchange = () => {
+                let filereader = new FileReader()
+                filereader.readAsDataURL(file.files[0])
+                filereader.onload = () => {
+                    let image = new Image()
+                    image.src = filereader.result
+                    ctx.drawImage(image,0,0)
+                    
+//                    let formData = new FormData()
+//                    formData.append('img',file.files[0]) 
+//                    formData.append('hola',"Holaaaa") 
+//                    let ajax = new XMLHttpRequest()
+//                    ajax.open('POST','files',true)
+//                    ajax.onload = () => {
+//                        console.log(ajax.responseText)
+//                    }
+//                    ajax.send(formData)
+                }
+            }
             
         </script>
     </body>
